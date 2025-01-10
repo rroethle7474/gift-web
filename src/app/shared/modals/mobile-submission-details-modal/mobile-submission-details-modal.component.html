@@ -1,0 +1,83 @@
+<div class="fixed inset-0 bg-gray-500 bg-opacity-75 z-40 modal-overlay" (click)="onClose()"></div>
+
+<div class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-xl max-h-[90vh] overflow-y-auto modal-content sm:max-w-2xl sm:mx-auto sm:inset-x-4">
+  <div class="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
+    <h2 class="text-lg font-semibold">Submission Details</h2>
+    <button class="text-gray-500" (click)="onClose()">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="p-4 space-y-6 pb-8">
+    <!-- Submission Details -->
+    <div class="space-y-4">
+      <h3 class="text-md font-medium">Submission Information</h3>
+      <div class="space-y-2">
+        <div class="flex justify-between">
+          <span class="text-gray-500">Status</span>
+          <span>{{ getStatusFriendlyName(submission.statusId) }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-500">Submitted</span>
+          <span>{{ submission.submissionDate | date:'medium' }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-500">Last Modified</span>
+          <span>{{ submission.lastModified | date:'medium' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wish List Items -->
+    <div class="space-y-4">
+      <h3 class="text-md font-medium">Wish List Items</h3>
+      @if (wishListItems.length) {
+        <div class="space-y-4">
+          @for (item of wishListItems; track item.itemId) {
+            <div class="border rounded-lg p-4 space-y-2">
+              <div class="flex justify-between">
+                <span class="font-medium">{{ item.itemName }}</span>
+                <span>Qty: {{ item.quantity }}</span>
+              </div>
+              <p class="text-gray-600">{{ item.description || '-' }}</p>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Est. Cost</span>
+                <span>{{ formatCurrency(item.estimatedCost) }}</span>
+              </div>
+              @if (item.productUrl) {
+                <a
+                  href="{{ item.productUrl }}"
+                  target="_blank"
+                  class="text-blue-500 hover:text-blue-700 block text-sm">
+                  View Product →
+                </a>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="text-center py-4 text-gray-500">
+          No wish list items found.
+        </div>
+      }
+    </div>
+
+    <!-- Action Buttons -->
+    @if (submission.statusId === 1) {
+      <div class="flex gap-3 pt-4">
+        <button
+          (click)="onApprove()"
+          class="flex-1 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm">
+          Approve
+        </button>
+        <button
+          (click)="onReject()"
+          class="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm">
+          Reject
+        </button>
+      </div>
+    }
+  </div>
+</div>

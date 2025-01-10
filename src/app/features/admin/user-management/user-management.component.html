@@ -1,0 +1,907 @@
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">User Management</h1>
+
+    <!-- User Creation Form -->
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-8">
+        <h2 class="text-xl font-semibold mb-4">Create New User</h2>
+        <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+                        Username *
+                    </label>
+                    <input class="form-input" id="username" type="text" formControlName="username" placeholder="Username">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                        Password *
+                    </label>
+                    <input class="form-input" id="password" type="password" formControlName="password" placeholder="Password">
+                </div>
+
+                <div>
+                  <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                      Name *
+                  </label>
+                  <input class="form-input" id="name" type="name" formControlName="name" placeholder="Name">
+              </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+                        Email *
+                    </label>
+                    <input class="form-input" id="email" type="email" formControlName="email" placeholder="Email">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="spendingLimit">
+                        Spending Limit
+                    </label>
+                    <input class="form-input" id="spendingLimit" type="number" formControlName="spendingLimit" placeholder="Spending Limit">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="sillyDescription">
+                        Silly Description
+                    </label>
+                    <input class="form-input" id="sillyDescription" type="text" formControlName="sillyDescription" placeholder="Silly Description">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="parentEmail1">
+                        Parent Email 1
+                    </label>
+                    <input class="form-input" id="parentEmail1" type="email" formControlName="parentEmail1" placeholder="Parent Email 1">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="parentEmail2">
+                        Parent Email 2
+                    </label>
+                    <input class="form-input" id="parentEmail2" type="email" formControlName="parentEmail2" placeholder="Parent Email 2">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="parentPhone1">
+                        Parent Phone 1
+                    </label>
+                    <app-phone-input
+                        formControlName="parentPhone1"
+                        placeholder="(555) 555-5555"
+                        [showError]="(userForm.get('parentPhone1')?.invalid && userForm.get('parentPhone1')?.touched) ?? false"
+                        [inputClass]="((userForm.get('parentPhone1')?.invalid && userForm.get('parentPhone1')?.touched) ?? false) ? 'error' : ''"
+                    ></app-phone-input>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="parentPhone2">
+                        Parent Phone 2
+                    </label>
+                    <app-phone-input
+                        formControlName="parentPhone2"
+                        placeholder="(555) 555-5555"
+                        [showError]="(userForm.get('parentPhone2')?.invalid && userForm.get('parentPhone2')?.touched) ?? false"
+                        [inputClass]="((userForm.get('parentPhone2')?.invalid && userForm.get('parentPhone2')?.touched) ?? false) ? 'error' : ''"
+                    ></app-phone-input>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="birthday">
+                        Birthday
+                    </label>
+                    <input type="date"
+                           id="birthday"
+                           formControlName="birthday"
+                           class="form-input w-full"
+                           placeholder="Select birthday">
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 mt-4">
+                <label class="flex items-center">
+                    <input type="checkbox" formControlName="isAdmin" class="form-checkbox">
+                    <span class="ml-2">Is Admin</span>
+                </label>
+            </div>
+
+            <div class="flex items-center justify-end mt-6">
+                <button type="submit"
+                        [disabled]="!userForm.valid || isLoading"
+                        class="btn-primary">
+                    {{ isLoading ? 'Creating...' : 'Create User' }}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- User List -->
+    <div class="bg-white shadow-md rounded px-4 sm:px-8 pt-6 pb-8">
+        <h2 class="text-xl font-semibold mb-4">User List</h2>
+
+        <!-- Desktop/Tablet View -->
+        <div class="desktop-only">
+            <div class="responsive-table-container">
+                <table class="min-w-full leading-normal">
+                    <thead>
+                        <tr>
+                            <th class="table-header w-1/5">Username</th>
+                            <th class="table-header w-1/5">Name</th>
+                            <th class="table-header w-1/4">Email</th>
+                            <th class="table-header w-1/6">Roles</th>
+                            <th class="table-header w-1/4 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (user of users; track user.userId) {
+                            @if (editingUserId === user.userId && editForm) {
+                                <tr class="hover:bg-gray-50">
+                                    <td class="table-cell">
+                                        <input [formControl]="$any(editForm.get('username'))"
+                                               class="form-input w-full"
+                                               [class.border-red-500]="editForm.get('username')?.invalid && editForm.get('username')?.touched">
+                                    </td>
+                                    <td class="table-cell">
+                                        <input [formControl]="$any(editForm.get('name'))"
+                                               class="form-input w-full"
+                                               [class.border-red-500]="editForm.get('name')?.invalid && editForm.get('name')?.touched">
+                                    </td>
+                                    <td class="table-cell">
+                                        <input [formControl]="$any(editForm.get('email'))"
+                                               class="form-input w-full"
+                                               [class.border-red-500]="editForm.get('email')?.invalid && editForm.get('email')?.touched">
+                                    </td>
+                                    <td class="table-cell">
+                                        <label class="flex items-center gap-2">
+                                            <input type="checkbox"
+                                                   [formControl]="$any(editForm.get('isAdmin'))"
+                                                   class="form-checkbox">
+                                            <span>Admin</span>
+                                        </label>
+                                    </td>
+                                    <td class="table-cell">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button (click)="saveEdit()"
+                                                    class="p-2 text-green-600 hover:text-green-800"
+                                                    [disabled]="!editForm.valid || isLoading"
+                                                    title="Save">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            </button>
+                                            <button (click)="cancelEditing()"
+                                                    class="p-2 text-gray-600 hover:text-gray-800"
+                                                    [disabled]="isLoading"
+                                                    title="Cancel">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                            <button (click)="openAdditionalPropertiesModal(user)"
+                                                    class="p-2 text-blue-600 hover:text-blue-800"
+                                                    [disabled]="isLoading"
+                                                    title="Additional Info">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            } @else {
+                                <tr class="hover:bg-gray-50">
+                                    <td class="table-cell">{{ user.username }}</td>
+                                    <td class="table-cell">{{ user.name }}</td>
+                                    <td class="table-cell">{{ user.email }}</td>
+                                    <td class="table-cell">
+                                        <span class="inline-flex gap-2">
+                                            @if (user.isAdmin) {
+                                                <span class="badge badge-admin">Admin</span>
+                                            }
+                                        </span>
+                                    </td>
+                                    <td class="table-cell">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button (click)="startEditing(user)"
+                                                    class="p-2 text-blue-600 hover:text-blue-800"
+                                                    [disabled]="isLoading"
+                                                    title="Edit">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                </svg>
+                                            </button>
+                                            <button (click)="deleteUser(user.userId)"
+                                                    class="p-2 text-red-600 hover:text-red-800"
+                                                    [disabled]="isLoading"
+                                                    title="Delete">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                            </button>
+                                            <button (click)="openPasswordModal(user.userId)"
+                                                    class="p-2 text-yellow-600 hover:text-yellow-800"
+                                                    [disabled]="isLoading"
+                                                    title="Change Password">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                                </svg>
+                                            </button>
+                                            <button (click)="openAdditionalPropertiesModal(user)"
+                                                    class="p-2 text-blue-600 hover:text-blue-800"
+                                                    [disabled]="isLoading"
+                                                    title="Additional Info">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                            </button>
+                                            <button (click)="openRecommendationModal(user)"
+                                                    class="p-2 text-purple-600 hover:text-purple-800"
+                                                    [disabled]="isLoading"
+                                                    title="Add Recommendation">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13H4a2 2 0 01-2-2V6a2 2 0 012-2h16a2 2 0 012 2v3a2 2 0 01-2 2h-8z"></path>
+                                                </svg>
+                                            </button>
+                                            <button (click)="openRecommendationsViewModal(user)"
+                                                    class="p-2 text-indigo-600 hover:text-indigo-800"
+                                                    [disabled]="isLoading"
+                                                    title="View Recommendations">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        } @empty {
+                            <tr>
+                                <td colspan="5" class="px-5 py-5 text-center text-gray-500">
+                                    No users found
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Mobile View -->
+        <div class="mobile-only">
+            @for (user of users; track user.userId) {
+                <div class="user-card">
+                    <div class="user-card-header" (click)="toggleUserCard(user.userId)">
+                        <h3 class="font-semibold">{{ user.username }}</h3>
+                        <div class="flex items-center gap-2">
+                            <span class="badge" [class.badge-admin]="user.isAdmin">
+                                {{ user.isAdmin ? 'Admin' : 'User' }}
+                            </span>
+                            <svg class="w-5 h-5 transform transition-transform"
+                                 [class.rotate-180]="expandedUserId === user.userId"
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    @if (editingUserId === user.userId && editForm) {
+                        <div class="user-card-content">
+                            <div class="user-card-field editing">
+                                <span class="label">Username</span>
+                                <input [formControl]="$any(editForm.get('username'))"
+                                       class="form-input"
+                                       [class.border-red-500]="editForm.get('username')?.invalid && editForm.get('username')?.touched">
+                            </div>
+                            <div class="user-card-field editing">
+                                <span class="label">Name</span>
+                                <input [formControl]="$any(editForm.get('name'))"
+                                       class="form-input"
+                                       [class.border-red-500]="editForm.get('name')?.invalid && editForm.get('name')?.touched">
+                            </div>
+                            <div class="user-card-field editing">
+                                <span class="label">Email</span>
+                                <input [formControl]="$any(editForm.get('email'))"
+                                       class="form-input"
+                                       [class.border-red-500]="editForm.get('email')?.invalid && editForm.get('email')?.touched">
+                            </div>
+                            <div class="user-card-field">
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox"
+                                           [formControl]="$any(editForm.get('isAdmin'))"
+                                           class="form-checkbox">
+                                    <span>Admin</span>
+                                </label>
+                            </div>
+                            <div class="flex justify-end gap-2 mt-4">
+                                <button (click)="saveEdit()"
+                                        class="btn-primary"
+                                        [disabled]="!editForm.valid || isLoading">
+                                    Save
+                                </button>
+                                <button (click)="cancelEditing()"
+                                        class="btn-secondary"
+                                        [disabled]="isLoading">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    } @else {
+                        <div class="user-card-content">
+                            <div class="user-card-field">
+                                <span class="label">Name</span>
+                                <span class="value">{{ user.name }}</span>
+                            </div>
+                            <div class="user-card-field">
+                                <span class="label">Email</span>
+                                <span class="value">{{ user.email }}</span>
+                            </div>
+                            <div class="user-card-field">
+                                <span class="label">Birthday</span>
+                                <span class="value">{{ user.birthday ? (user.birthday | date:'mediumDate') : '-' }}</span>
+                            </div>
+                            <div class="user-card-field">
+                                <span class="label">Parent Phone 1</span>
+                                <span class="value">{{ user.parentPhone1 | phoneNumber }}</span>
+                            </div>
+                            <div class="user-card-field">
+                                <span class="label">Parent Phone 2</span>
+                                <span class="value">{{ user.parentPhone2 | phoneNumber }}</span>
+                            </div>
+                        </div>
+                    }
+
+                    @if (expandedUserId === user.userId) {
+                        <div class="user-card-expanded">
+                            <div class="action-group">
+                                <span class="action-label">User Management</span>
+                                <button (click)="startEditing(user)"
+                                        class="btn-icon"
+                                        [disabled]="isLoading"
+                                        title="Edit">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </button>
+                                <button (click)="deleteUser(user.userId)"
+                                        class="btn-icon text-red-600"
+                                        [disabled]="isLoading"
+                                        title="Delete">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                                <button (click)="openPasswordModal(user.userId)"
+                                        class="btn-icon text-yellow-600"
+                                        [disabled]="isLoading"
+                                        title="Change Password">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div class="action-group mt-4">
+                                <span class="action-label">Additional Options</span>
+                                <button (click)="openAdditionalPropertiesModal(user)"
+                                        class="btn-icon text-blue-600"
+                                        [disabled]="isLoading"
+                                        title="Additional Info">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </button>
+                                <button (click)="openRecommendationModal(user)"
+                                        class="btn-icon text-purple-600"
+                                        [disabled]="isLoading"
+                                        title="Add Recommendation">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13H4a2 2 0 01-2-2V6a2 2 0 012-2h16a2 2 0 012 2v3a2 2 0 01-2 2h-8z"></path>
+                                    </svg>
+                                </button>
+                                <button (click)="openRecommendationsViewModal(user)"
+                                        class="btn-icon text-indigo-600"
+                                        [disabled]="isLoading"
+                                        title="View Recommendations">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            } @empty {
+                <div class="text-center text-gray-500 py-4">
+                    No users found
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Additional Properties Modal -->
+<div *ngIf="showAdditionalPropertiesModal && selectedUser"
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 max-w-2xl w-full">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold">Additional Properties for {{ selectedUser.username }}</h2>
+            <div class="flex items-center gap-4">
+                @if (!isEditingAdditionalProperties) {
+                    <button (click)="startEditingAdditionalProperties()"
+                            class="btn-icon text-blue-600 hover:text-blue-800"
+                            [disabled]="isLoading"
+                            title="Edit">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                            </path>
+                        </svg>
+                    </button>
+                }
+                <button (click)="closeAdditionalPropertiesModal()"
+                        class="text-gray-500 hover:text-gray-700">
+                    ✕
+                </button>
+            </div>
+        </div>
+
+        @if (isEditingAdditionalProperties && additionalPropertiesForm) {
+            <!-- Edit Mode -->
+            <form [formGroup]="additionalPropertiesForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">
+                            Spending Limit
+                        </label>
+                        <input type="number"
+                               formControlName="spendingLimit"
+                               class="form-input w-full">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">
+                            Silly Description
+                        </label>
+                        <input type="text"
+                               formControlName="sillyDescription"
+                               class="form-input w-full">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">
+                            Parent Email 1
+                        </label>
+                        <input type="email"
+                               formControlName="parentEmail1"
+                               class="form-input w-full"
+                               [class.border-red-500]="additionalPropertiesForm.get('parentEmail1')?.invalid && additionalPropertiesForm.get('parentEmail1')?.touched">
+                        <span *ngIf="additionalPropertiesForm.get('parentEmail1')?.invalid && additionalPropertiesForm.get('parentEmail1')?.touched"
+                              class="text-red-500 text-sm mt-1">
+                            Please enter a valid email address
+                        </span>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">
+                            Parent Email 2
+                        </label>
+                        <input type="email"
+                               formControlName="parentEmail2"
+                               class="form-input w-full"
+                               [class.border-red-500]="additionalPropertiesForm.get('parentEmail2')?.invalid && additionalPropertiesForm.get('parentEmail2')?.touched">
+                        <span *ngIf="additionalPropertiesForm.get('parentEmail2')?.invalid && additionalPropertiesForm.get('parentEmail2')?.touched"
+                              class="text-red-500 text-sm mt-1">
+                            Please enter a valid email address
+                        </span>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">
+                            Parent Phone 1
+                        </label>
+                        <app-phone-input
+                            formControlName="parentPhone1"
+                            placeholder="(555) 555-5555"
+                            [showError]="(additionalPropertiesForm.get('parentPhone1')?.invalid && additionalPropertiesForm.get('parentPhone1')?.touched) ?? false"
+                            [inputClass]="((additionalPropertiesForm.get('parentPhone1')?.invalid && additionalPropertiesForm.get('parentPhone1')?.touched) ?? false) ? 'border-red-500' : ''">
+                        </app-phone-input>
+                        <span *ngIf="additionalPropertiesForm.get('parentPhone1')?.invalid && additionalPropertiesForm.get('parentPhone1')?.touched"
+                              class="text-red-500 text-sm mt-1">
+                            Please enter a valid phone number in format (XXX) XXX-XXXX
+                        </span>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">
+                            Parent Phone 2
+                        </label>
+                        <app-phone-input
+                            formControlName="parentPhone2"
+                            placeholder="(555) 555-5555"
+                            [showError]="(additionalPropertiesForm.get('parentPhone2')?.invalid && additionalPropertiesForm.get('parentPhone2')?.touched) ?? false"
+                            [inputClass]="((additionalPropertiesForm.get('parentPhone2')?.invalid && additionalPropertiesForm.get('parentPhone2')?.touched) ?? false) ? 'border-red-500' : ''">
+                        </app-phone-input>
+                        <span *ngIf="additionalPropertiesForm.get('parentPhone2')?.invalid && additionalPropertiesForm.get('parentPhone2')?.touched"
+                              class="text-red-500 text-sm mt-1">
+                            Please enter a valid phone number in format (XXX) XXX-XXXX
+                        </span>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">
+                            Birthday
+                        </label>
+                        <input type="date"
+                               formControlName="birthday"
+                               class="form-input w-full">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button"
+                            (click)="cancelEditingAdditionalProperties()"
+                            class="btn-secondary">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            (click)="saveAdditionalProperties()"
+                            [disabled]="!additionalPropertiesForm.valid || isLoading"
+                            class="btn-primary">
+                        {{ isLoading ? 'Saving...' : 'Save Changes' }}
+                    </button>
+                </div>
+            </form>
+        } @else {
+            <!-- View Mode -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Spending Limit</label>
+                    <p class="text-gray-800">{{ selectedUser.spendingLimit ? '$' + selectedUser.spendingLimit : '-' }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Silly Description</label>
+                    <p class="text-gray-800">{{ selectedUser.sillyDescription || '-' }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Parent Email 1</label>
+                    <p class="text-gray-800">{{ selectedUser.parentEmail1 || '-' }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Parent Email 2</label>
+                    <p class="text-gray-800">{{ selectedUser.parentEmail2 || '-' }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Parent Phone 1</label>
+                    <p class="text-gray-800">{{ selectedUser.parentPhone1 | phoneNumber }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Parent Phone 2</label>
+                    <p class="text-gray-800">{{ selectedUser.parentPhone2 | phoneNumber }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Birthday</label>
+                    <p class="text-gray-800">{{ selectedUser.birthday ? (selectedUser.birthday | date:'mediumDate') : '-' }}</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Password Change Modal -->
+<div *ngIf="showPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 max-w-md w-full">
+        <h2 class="text-xl font-semibold mb-4">Change Password</h2>
+        <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" class="space-y-4">
+            <div class="relative">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="newPassword">
+                    New Password <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                    <input [type]="showNewPassword ? 'text' : 'password'"
+                           id="newPassword"
+                           formControlName="newPassword"
+                           class="form-input pr-10 w-full"
+                           placeholder="Enter new password">
+                    <button type="button"
+                            (click)="togglePasswordVisibility('new')"
+                            class="absolute right-2 top-1/2 transform -translate-y-1/2">
+                        <i class="fas" [class.fa-eye]="!showNewPassword" [class.fa-eye-slash]="showNewPassword"></i>
+                    </button>
+                </div>
+                <span *ngIf="passwordForm.get('newPassword')?.touched && passwordForm.get('newPassword')?.errors?.['required']"
+                      class="text-red-500 text-sm mt-1">
+                    New password is required
+                </span>
+            </div>
+
+            <div class="relative">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="confirmPassword">
+                    Confirm Password <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                    <input [type]="showConfirmPassword ? 'text' : 'password'"
+                           id="confirmPassword"
+                           formControlName="confirmPassword"
+                           class="form-input pr-10 w-full"
+                           placeholder="Confirm new password">
+                    <button type="button"
+                            (click)="togglePasswordVisibility('confirm')"
+                            class="absolute right-2 top-1/2 transform -translate-y-1/2">
+                        <i class="fas" [class.fa-eye]="!showConfirmPassword" [class.fa-eye-slash]="showConfirmPassword"></i>
+                    </button>
+                </div>
+                <span *ngIf="passwordForm.get('confirmPassword')?.touched && passwordForm.get('confirmPassword')?.errors?.['required']"
+                      class="text-red-500 text-sm mt-1">
+                    Confirm password is required
+                </span>
+                <span *ngIf="passwordForm.errors?.['mismatch'] && passwordForm.get('confirmPassword')?.touched"
+                      class="text-red-500 text-sm mt-1">
+                    Passwords do not match
+                </span>
+            </div>
+
+            <div class="flex justify-end gap-4 mt-6">
+                <button type="button"
+                        (click)="closePasswordModal()"
+                        class="btn-secondary">
+                    Cancel
+                </button>
+                <button type="submit"
+                        [disabled]="!passwordForm.valid || isLoading"
+                        class="btn-primary">
+                    {{ isLoading ? 'Changing...' : 'Change Password' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Recommendation Modal -->
+<div *ngIf="showRecommendationModal && selectedUserForRecommendation"
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+    <div class="bg-white rounded-lg p-8 max-w-2xl w-full my-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold">Add Wish List Recommendation for {{ selectedUserForRecommendation.username }}</h2>
+            <button (click)="closeRecommendationModal()"
+                    class="text-gray-500 hover:text-gray-700">
+                ✕
+            </button>
+        </div>
+
+        <form [formGroup]="recommendationForm" class="space-y-4">
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Item Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text"
+                           formControlName="itemName"
+                           class="form-input w-full"
+                           [class.border-red-500]="recommendationForm.get('itemName')?.invalid && recommendationForm.get('itemName')?.touched">
+                    <span *ngIf="recommendationForm.get('itemName')?.invalid && recommendationForm.get('itemName')?.touched"
+                          class="text-red-500 text-sm mt-1">
+                        Item name is required and must be less than 100 characters
+                    </span>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Description
+                    </label>
+                    <textarea formControlName="description"
+                            rows="3"
+                            class="form-input w-full"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Product URL
+                    </label>
+                    <input type="url"
+                           formControlName="productUrl"
+                           class="form-input w-full">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Product Image URL
+                    </label>
+                    <input type="url"
+                           formControlName="productSrcImage"
+                           class="form-input w-full">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Estimated Cost
+                    </label>
+                    <input type="number"
+                           step="0.01"
+                           formControlName="estimatedCost"
+                           class="form-input w-full">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">
+                        Quantity <span class="text-red-500">*</span>
+                    </label>
+                    <input type="number"
+                           formControlName="defaultQuantity"
+                           class="form-input w-full"
+                           [class.border-red-500]="recommendationForm.get('defaultQuantity')?.invalid && recommendationForm.get('defaultQuantity')?.touched">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-4 mt-6">
+                <button type="button"
+                        (click)="closeRecommendationModal()"
+                        class="btn-secondary">
+                    Cancel
+                </button>
+                <button type="button"
+                        (click)="addRecommendation()"
+                        [disabled]="!recommendationForm.valid || isLoading"
+                        class="btn-primary">
+                    {{ isLoading ? 'Adding...' : 'Add Recommendation' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Recommendations View Modal -->
+<div *ngIf="showRecommendationsViewModal && selectedUserForRecommendations"
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+    <div class="bg-white rounded-lg p-8 max-w-4xl w-full my-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold">Recommendations for {{ selectedUserForRecommendations.username }}</h2>
+            <button (click)="closeRecommendationsViewModal()"
+                    class="text-gray-500 hover:text-gray-700">
+                ✕
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            @for (item of userRecommendations; track item.recommendItemId) {
+                <div class="recommendation-card bg-white border rounded-lg p-4 shadow-sm">
+                    @if (editingRecommendationId === item.recommendItemId && editRecommendationForm) {
+                        <!-- Edit Mode -->
+                        <div class="space-y-4">
+                            <div class="form-field">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Item Name</label>
+                                <input type="text"
+                                       [formControl]="$any(editRecommendationForm.get('itemName'))"
+                                       class="form-input w-full">
+                            </div>
+
+                            <div class="form-field">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+                                <textarea [formControl]="$any(editRecommendationForm.get('description'))"
+                                        class="form-input w-full"
+                                        rows="3"></textarea>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="form-field">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Product URL</label>
+                                    <input type="url"
+                                           [formControl]="$any(editRecommendationForm.get('productUrl'))"
+                                           class="form-input w-full">
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Product Image URL</label>
+                                    <input type="url"
+                                           [formControl]="$any(editRecommendationForm.get('productSrcImage'))"
+                                           class="form-input w-full">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="form-field">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Estimated Cost</label>
+                                    <input type="number"
+                                           step="0.01"
+                                           [formControl]="$any(editRecommendationForm.get('estimatedCost'))"
+                                           class="form-input w-full">
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Quantity</label>
+                                    <input type="number"
+                                           [formControl]="$any(editRecommendationForm.get('defaultQuantity'))"
+                                           class="form-input w-full">
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end gap-2 mt-4">
+                                <button (click)="saveRecommendationEdit()"
+                                        class="btn-primary"
+                                        [disabled]="!editRecommendationForm.valid || isLoading">
+                                    Save
+                                </button>
+                                <button (click)="cancelRecommendationEdit()"
+                                        class="btn-secondary">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    } @else {
+                        <!-- View Mode -->
+                        <div class="flex flex-col space-y-3">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-lg font-semibold">{{ item.itemName }}</h3>
+                                <div class="flex gap-2">
+                                    <button (click)="startEditingRecommendation(item)"
+                                            class="btn-icon text-blue-600"
+                                            title="Edit">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </button>
+                                    <button (click)="deleteRecommendation(item.recommendItemId)"
+                                            class="btn-icon text-red-600"
+                                            title="Delete">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            @if (item.description) {
+                                <p class="text-gray-600">{{ item.description }}</p>
+                            }
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Cost:</span>
+                                        <span class="font-medium">{{ item.estimatedCost | currency }}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Quantity:</span>
+                                        <span class="font-medium">{{ item.defaultQuantity }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-2">
+                                    @if (item.productUrl) {
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-gray-600">Product:</span>
+                                            <button class="text-blue-600 hover:text-blue-800 underline"
+                                                    (click)="openProductUrl(item.productUrl)">
+                                                View Product
+                                            </button>
+                                        </div>
+                                    }
+                                    @if (item.productSrcImage) {
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-gray-600">Image:</span>
+                                            <button class="text-blue-600 hover:text-blue-800 underline"
+                                                    (click)="openProductUrl(item.productSrcImage)">
+                                                View Image
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            } @empty {
+                <div class="text-center text-gray-500 py-4">
+                    No recommendations found
+                </div>
+            }
+        </div>
+    </div>
+</div>

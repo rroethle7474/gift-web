@@ -1,0 +1,340 @@
+// Form Styles
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    &:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+    }
+}
+
+.form-checkbox {
+    border-radius: 0.25rem;
+    border-color: #d1d5db;
+    color: #2563eb;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    &:focus {
+        border-color: #93c5fd;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+    }
+}
+
+// Table Styles
+.table-header {
+    padding: 0.75rem 1rem;
+    background-color: #f9fafb;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #4b5563;
+    border-bottom: 1px solid #e5e7eb;
+    letter-spacing: 0.05em;
+}
+
+.table-cell {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.875rem;
+
+    input.form-input {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+// Badge Styles
+.badge {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 9999px;
+
+    &.badge-admin {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+}
+
+// Button hover states
+button {
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &.btn-primary {
+        color: white;
+        background-color: #2563eb;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+
+        &:hover:not(:disabled) {
+            background-color: #1d4ed8;
+        }
+
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #2563eb;
+        }
+    }
+
+    &.btn-secondary {
+        color: #374151;
+        background-color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        border: 1px solid #d1d5db;
+        font-weight: 500;
+
+        &:hover:not(:disabled) {
+            background-color: #f9fafb;
+        }
+
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #2563eb;
+        }
+    }
+
+    &.btn-delete {
+        color: #dc2626;
+
+        &:hover:not(:disabled) {
+            color: #991b1b;
+        }
+    }
+}
+
+// Action buttons in table
+.table-cell button {
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    svg {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+}
+
+// Row hover effect
+tr:hover {
+    background-color: #f9fafb;
+}
+
+// Responsive Table Styles
+.responsive-table-container {
+  @apply w-full overflow-x-auto rounded-lg shadow;
+  -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+
+  // Show scroll indicator on mobile
+  @media (max-width: 768px) {
+    &::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      background: linear-gradient(to left, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 100%);
+      pointer-events: none;
+    }
+  }
+}
+
+// Card view for mobile
+@media (max-width: 640px) {
+  .user-card {
+    @apply bg-white rounded-lg shadow-md p-4 mb-4;
+
+    .user-card-header {
+      @apply flex justify-between items-center mb-3 cursor-pointer;
+    }
+
+    .user-card-content {
+      @apply space-y-2;
+    }
+
+    .user-card-field {
+      @apply flex justify-between items-center;
+
+      .label {
+        @apply text-gray-600 text-sm;
+      }
+
+      .value {
+        @apply text-gray-900;
+      }
+
+      &.editing {
+        @apply flex-col items-start gap-1;
+
+        input {
+          @apply w-full form-input;
+        }
+      }
+    }
+
+    .user-card-actions {
+      @apply flex flex-wrap justify-end gap-2 mt-4 pt-3 border-t border-gray-100;
+    }
+
+    .user-card-expanded {
+      @apply mt-4 pt-3 border-t border-gray-100;
+    }
+
+    .action-group {
+      @apply flex flex-wrap gap-2 justify-end;
+
+      .action-label {
+        @apply text-sm text-gray-600 w-full text-right;
+      }
+    }
+  }
+}
+
+// Responsive adjustments for table
+@media (min-width: 641px) {
+  .mobile-only {
+    display: none;
+  }
+
+  .table-header {
+    white-space: nowrap;
+  }
+
+  .table-cell {
+    white-space: nowrap;
+
+    &.actions {
+      width: 1%;  // Make actions column as narrow as possible
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .desktop-only {
+    display: none;
+  }
+}
+
+// Modal Styles
+.fixed.inset-0 {
+  &.flex.items-center.justify-center {
+    // Ensure modal is scrollable and doesn't get cut off
+    min-height: 100vh;
+    padding: {
+      top: 5rem;    // Add space for header
+      bottom: 2rem; // Add some bottom padding
+    }
+
+    // Handle overflow
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
+    // Ensure modal content doesn't stretch too much on large screens
+    > div {
+      margin: {
+        top: auto;
+        bottom: auto;
+      }
+      max-height: calc(100vh - 7rem); // Account for padding and some space
+      overflow-y: auto;
+    }
+  }
+}
+
+// Form input spacing in modals
+.form-input {
+  &:not(textarea) {
+    height: 2.5rem;
+  }
+
+  &.w-full {
+    max-width: 100%;
+  }
+}
+
+textarea.form-input {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+// Recommendation card styles
+.recommendation-card {
+  @apply transition-shadow duration-200;
+
+  &:hover {
+    @apply shadow-md;
+  }
+
+  .form-field {
+    @apply relative;
+
+    label {
+      @apply block text-gray-700 text-sm font-bold mb-2;
+    }
+
+    input, textarea {
+      @apply w-full;
+    }
+  }
+}
+
+// Ensure modals stack properly
+.fixed.inset-0 {
+  &.flex.items-center.justify-center {
+    z-index: 50;
+
+    // Recommendations modal should appear above other modals
+    .recommendations-modal {
+      z-index: 51;
+    }
+  }
+}
+
+// Modal header styles
+.modal-header {
+  .btn-icon {
+    padding: 0.5rem;
+    border-radius: 9999px;
+    transition: background-color 0.2s;
+
+    &:hover:not(:disabled) {
+      background-color: #f3f4f6;  // gray-100
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+}
+
+// View mode styles
+.property-value {
+  color: #1f2937;  // gray-800
+  word-wrap: break-word;
+
+  &.empty {
+    color: #9ca3af;  // gray-400
+    font-style: italic;
+  }
+}

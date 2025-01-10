@@ -1,0 +1,874 @@
+.wish-list-container {
+  padding: 20px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.wish-list-table {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+
+  th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    white-space: nowrap;
+  }
+
+  td {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  td:nth-child(2) {
+    white-space: normal;
+    min-width: 150px;
+  }
+
+  td:last-child {
+    width: 100px;
+    min-width: 100px;
+    white-space: nowrap;
+    padding-right: 16px;
+    text-align: right;
+
+    .invisible-placeholder {
+      opacity: 0;
+      display: inline-block;
+      width: 64px; // Approximate width of the action buttons
+    }
+  }
+
+  th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+  }
+
+  // .actions {
+  //   display: flex;
+  //   gap: 8px;
+  //   justify-content: flex-end;
+  //   min-height: 32px;
+  // }
+
+  .icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+
+    &:hover {
+      background-color: #f0f0f0;
+      border-radius: 4px;
+    }
+  }
+}
+
+.add-gift-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+
+  .button-group {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.add-gift-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+
+  &:hover:not(:disabled) {
+    background-color: #27ae60;
+  }
+
+  &:disabled {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .plus-icon {
+    font-size: 20px;
+    font-weight: bold;
+  }
+}
+
+.submit-list-button {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+
+  &:hover:not(:disabled) {
+    background-color: #2980b9;
+  }
+
+  &:disabled {
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+a {
+  color: #3498db;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .close-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    line-height: 1;
+    color: #666;
+
+    &:hover {
+      color: #000;
+    }
+  }
+}
+
+.modal-body {
+  padding: 1rem;
+
+  .form-group {
+    margin-bottom: 1rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+
+      &:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 1px #4299e1;
+      }
+    }
+  }
+
+  .form-divider {
+    text-align: center;
+    margin: 1rem 0;
+    position: relative;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 45%;
+      height: 1px;
+      background-color: #e2e8f0;
+    }
+
+    &::before {
+      left: 0;
+    }
+
+    &::after {
+      right: 0;
+    }
+  }
+}
+
+.modal-footer {
+  padding: 1rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+
+  button {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .cancel-button {
+    background-color: #e2e8f0;
+    border: none;
+    color: #4a5568;
+
+    &:hover {
+      background-color: #cbd5e0;
+    }
+  }
+
+  .add-button {
+    background-color: #2ecc71;
+    border: none;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: #27ae60;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.edit-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: inherit;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 1px #4299e1;
+  }
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+
+  &:hover {
+    background-color: #f0f0f0;
+    border-radius: 4px;
+  }
+
+  .save-icon {
+    color: #2ecc71;
+    font-weight: bold;
+  }
+
+  .cancel-icon {
+    color: #e74c3c;
+  }
+}
+
+tr:has(.edit-input) {
+  background-color: #f8fafc;
+}
+
+.edit-submittal-button {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #e74c3c;  // Red color to indicate caution
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+
+  &:hover:not(:disabled) {
+    background-color: #c0392b;
+  }
+
+  &:disabled {
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+.submission-info {
+  width: 100%;
+  max-width: 650px;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 4px;
+  text-align: left;
+
+  p {
+    margin: 0.5rem 0;
+  }
+}
+
+.step-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px; // full rounded
+  transition: all 0.3s;
+  width: 3.5rem;
+  height: 3.5rem;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.active-step {
+  background-color: #22c55e; // green-500
+  color: white;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+}
+
+.completed-step {
+  background-color: #22c55e; // green-500
+  color: white;
+}
+
+.inactive-step {
+  background-color: #e5e7eb; // gray-200
+  color: #4b5563; // gray-600
+}
+
+// Add a pulsing animation for the active step
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+.active-step {
+  animation: pulse 2s infinite;
+}
+
+// Progress bar animation
+.progress-bar {
+  height: 100%;
+  background-color: #22c55e; // green-500
+  transition: width 0.5s ease-in-out;
+}
+
+.edit-field-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    .edit-indicator {
+      opacity: 1;
+    }
+  }
+
+  .edit-input {
+    cursor: pointer;
+    background-color: #f8fafc;
+    padding-right: 2rem;
+    text-overflow: ellipsis;
+
+    &:hover {
+      background-color: #f1f5f9;
+    }
+  }
+
+  .edit-indicator {
+    position: absolute;
+    right: 8px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    background-color: inherit;
+    padding: 0 4px;
+    z-index: 1;
+  }
+}
+
+.greeting-section {
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+  border: 2px dashed #3b82f6;
+
+  h2 {
+    background: linear-gradient(45deg, #1e40af, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  ul {
+    li {
+      position: relative;
+      padding-left: 10px;
+
+      &::before {
+        content: '•';
+        color: #3b82f6;
+        font-size: 1.5em;
+        line-height: 1;
+        position: absolute;
+        left: -10px;
+      }
+    }
+  }
+}
+
+// Add this to ensure Comic Sans fallback is available globally
+@font-face {
+  font-family: 'Comic Sans MS';
+  src: local('Comic Sans MS');
+  font-display: swap;
+}
+
+.recommendations-section {
+  padding: 2rem 0;
+
+  .carousel {
+    margin: 0 -1rem;  // Negative margin to account for slide padding
+  }
+
+  .slide-item {
+    padding: 1rem;
+  }
+
+  .recommendation-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    overflow: hidden;
+    display: flex;
+    height: 400px;
+
+    .image-container {
+      width: 40%;
+      padding: 1rem;
+
+      .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0.5rem;
+      }
+    }
+
+    .content-container {
+      width: 60%;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+
+      .item-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #1a202c;
+      }
+
+      .item-price {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: #2563eb;
+        margin-bottom: 1rem;
+      }
+
+      .item-description {
+        flex-grow: 1;
+        color: #4b5563;
+        line-height: 1.5;
+        overflow-y: auto;
+      }
+
+      .action-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+
+        .quantity {
+          font-weight: 500;
+          color: #6b7280;
+        }
+
+        .add-to-wishlist-btn {
+          background-color: #2563eb;
+          color: white;
+          padding: 0.5rem 1rem;
+          border-radius: 0.5rem;
+          font-weight: 500;
+          transition: all 0.2s;
+
+          &:hover:not(:disabled) {
+            background-color: #1d4ed8;
+            transform: translateY(-1px);
+          }
+
+          &:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background-color: #94a3b8; // Slate-400
+          }
+        }
+      }
+    }
+  }
+}
+
+// Slick carousel custom styles
+:host ::ng-deep {
+  .slick-prev, .slick-next {
+    z-index: 1;
+    width: 40px;
+    height: 40px;
+    background: rgba(37, 99, 235, 0.8); // Blue background
+    border-radius: 50%;
+    transition: all 0.2s;
+
+    &:before {
+      font-size: 24px;
+      opacity: 1;
+    }
+
+    &:hover {
+      background: rgba(37, 99, 235, 1);
+      transform: scale(1.1);
+    }
+
+    &.slick-disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .slick-prev {
+    left: 15px;
+    &:before {
+      content: '←';
+    }
+  }
+
+  .slick-next {
+    right: 15px;
+    &:before {
+      content: '→';
+    }
+  }
+
+  // Add dots styling
+  .slick-dots {
+    bottom: -30px;
+
+    li {
+      button:before {
+        font-size: 12px;
+        color: #2563eb;
+        opacity: 0.3;
+      }
+
+      &.slick-active button:before {
+        opacity: 1;
+      }
+    }
+  }
+
+  // Add swipe indicator on mobile
+  @media (max-width: 768px) {
+    .slick-track:before {
+      content: '← Swipe →';
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      color: #6b7280;
+      animation: fadeOut 3s forwards;
+      pointer-events: none;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      70% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+  }
+}
+
+// Add these styles to fix the step alignment
+.flex.justify-between.items-center {
+  // Ensure equal spacing between steps
+  gap: 1rem;
+  padding: 0 1rem;
+
+  // Make each step take equal width
+  > div {
+    flex: 1;
+    min-width: 0; // Allow content to shrink below min-content width
+  }
+}
+
+// Ensure step labels don't cause layout shifts
+.text-sm.font-medium {
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Add these styles for responsive tables
+@media (max-width: 768px) {
+  .wish-list-container {
+    padding: 1rem;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    margin: 0;
+  }
+
+  .wish-list-table,
+  .submissions-history table {
+    width: 100%;
+    min-width: unset;
+    max-width: 100%;
+    overflow: hidden;
+
+    thead {
+      display: none;
+    }
+
+    tr {
+      display: block;
+      width: 100%;
+      margin: 0 0 1rem 0;
+      background: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    td {
+      display: block;
+      width: 100%;
+      padding: 0.5rem 0;
+      border: none;
+      max-width: none;
+      white-space: normal;
+      text-align: left !important;
+      box-sizing: border-box;
+
+      &::before {
+        content: attr(data-label);
+        font-weight: 600;
+        display: block;
+        color: #4a5568;
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+      }
+
+      &:not(:last-child) {
+        border-bottom: 1px solid #edf2f7;
+        margin-bottom: 0.5rem;
+      }
+
+      &:last-child {
+        padding-top: 1rem;
+        text-align: right;
+        border-top: 1px solid #edf2f7;
+
+        &::before {
+          content: 'Actions';
+          text-align: left;
+          margin-bottom: 0.75rem;
+        }
+
+        .actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 0.5rem;
+        }
+      }
+    }
+  }
+
+  // Specific styles for submission history table
+  .submissions-history {
+    table {
+      width: 100%;
+
+      td {
+        text-align: left !important;
+        padding-left: 0;
+        padding-right: 0;
+
+        // Remove any inherited alignment classes
+        &[class*="text-right"],
+        &[class*="text-center"] {
+          text-align: left !important;
+        }
+
+        &[data-label="Reason"] {
+          text-align: left !important;
+          margin-top: 0.5rem;
+        }
+      }
+    }
+  }
+
+  // Mobile-specific recommendation card styles
+  .recommendations-section {
+    .recommendation-card {
+      flex-direction: column;
+      height: auto;
+      padding: 1rem;
+
+      .image-container {
+        width: 100%;
+        height: 200px;  // Fixed height for consistency
+        padding: 0;
+        margin-bottom: 1rem;
+
+        .product-image {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;  // Changed to contain to show full product
+          background: #f8fafc;  // Light background for images
+        }
+      }
+
+      .content-container {
+        width: 100%;
+        padding: 0;
+
+        .item-title {
+          font-size: 1.25rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .item-price {
+          font-size: 1.125rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .item-description {
+          font-size: 1rem;
+          margin-bottom: 1rem;
+          max-height: 4.5rem;  // About 3 lines of text
+          overflow-y: hidden;
+        }
+
+        .action-row {
+          flex-direction: column;
+          gap: 0.75rem;
+          align-items: stretch;
+
+          .quantity {
+            text-align: center;
+          }
+
+          .add-to-wishlist-btn {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+
+    // Adjust carousel navigation for mobile
+    ::ng-deep {
+      .slick-prev, .slick-next {
+        width: 32px;
+        height: 32px;
+        z-index: 2;
+      }
+
+      .slick-prev {
+        left: 5px;
+      }
+
+      .slick-next {
+        right: 5px;
+      }
+
+      // Improve dots visibility
+      .slick-dots {
+        bottom: -35px;
+
+        li button:before {
+          font-size: 10px;
+        }
+      }
+    }
+  }
+}
+
+.greeting-section-no-money {
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+  border: 2px dashed #3b82f6;
+  text-align: center;
+
+  h2 {
+    background: linear-gradient(45deg, #1e40af, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  p {
+    line-height: 1.6;
+  }
+}

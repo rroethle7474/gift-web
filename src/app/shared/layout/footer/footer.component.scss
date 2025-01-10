@@ -1,0 +1,65 @@
+.footer-container {
+  height: 100px;
+  background: linear-gradient(135deg, #d42f2f 0%, #1a472a 100%);
+  position: relative;
+  overflow: hidden;
+  margin-top: 40px;
+}
+
+.wave-container {
+  position: absolute;
+  top: -80px;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  line-height: 0;
+  transform: scaleY(1.2);
+}
+
+.wave {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  path {
+    fill: #d42f2f;
+    filter: drop-shadow(0 -2px 3px rgba(0, 0, 0, 0.2));
+  }
+}
+
+.snowflake {
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.christmas-message {
+  position: absolute;
+  font-family: 'Mountains of Christmas', cursive;
+  color: white;
+  font-size: 1.8rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  animation: fadeInOut 2s ease-in-out;
+  pointer-events: none;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+}
+
+.footer-content {
+  position: relative;
+  z-index: 5;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+}

@@ -1,0 +1,130 @@
+<div class="container mx-auto px-4 py-8">
+  @if (loading) {
+    <div class="flex justify-center items-center h-64">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+    </div>
+  } @else if (error || !submission) {
+    <div class="text-center py-8">
+      <h2 class="text-xl font-semibold text-gray-700">No Results Found</h2>
+      <p class="text-gray-500 mt-2">The requested submission could not be found.</p>
+    </div>
+  } @else {
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <!-- Submission Header -->
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold mb-4">Submission Details</h1>
+
+        <!-- Status and Actions -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gray-50 p-4 rounded-lg space-y-4 sm:space-y-0">
+          <div class="flex items-center space-x-4">
+            <span class="text-sm font-medium text-gray-500">Status:</span>
+            <span class="font-semibold">{{ getStatusFriendlyName(submission.statusId) }}</span>
+          </div>
+          <div class="flex space-x-2 w-full sm:w-auto">
+            <button
+              (click)="onApprove()"
+              [disabled]="submission.statusId === 2"
+              [class]="submission.statusId === 2 ?
+                'flex-1 sm:flex-none bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-md text-sm' :
+                'flex-1 sm:flex-none bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm'">
+              {{ submission.statusId === 2 ? 'Approved' : 'Approve' }}
+            </button>
+            <button
+              (click)="onReject()"
+              [disabled]="submission.statusId !== 1"
+              [class]="submission.statusId !== 1 ?
+                'flex-1 sm:flex-none bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-md text-sm' :
+                'flex-1 sm:flex-none bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm'">
+              {{ submission.statusId === 3 ? 'Rejected' : 'Reject' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wish List Items -->
+      <div>
+        <!-- Desktop Table (hidden on mobile) -->
+        <div class="hidden sm:block overflow-x-auto">
+          <table class="min-w-full table-auto">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estimated Cost</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product URL</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              @for (item of wishListItems; track item.itemId) {
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ item.itemName }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ item.description || '-' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ item.quantity }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ formatCurrency(item.estimatedCost) }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    @if (item.productUrl) {
+                      <a href="{{ item.productUrl }}" target="_blank" class="text-blue-500 hover:text-blue-700">
+                        View Product
+                      </a>
+                    } @else {
+                      -
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Card Layout -->
+        <div class="sm:hidden space-y-4">
+          @for (item of wishListItems; track item.itemId) {
+            <div class="bg-gray-50 p-4 rounded-lg space-y-3">
+              <div>
+                <span class="text-sm font-medium text-gray-500">Item Name:</span>
+                <p class="mt-1">{{ item.itemName }}</p>
+              </div>
+              <div>
+                <span class="text-sm font-medium text-gray-500">Description:</span>
+                <p class="mt-1">{{ item.description || '-' }}</p>
+              </div>
+              <div>
+                <span class="text-sm font-medium text-gray-500">Quantity:</span>
+                <p class="mt-1">{{ item.quantity }}</p>
+              </div>
+              <div>
+                <span class="text-sm font-medium text-gray-500">Estimated Cost:</span>
+                <p class="mt-1">{{ formatCurrency(item.estimatedCost) }}</p>
+              </div>
+              <div>
+                <span class="text-sm font-medium text-gray-500">Product URL:</span>
+                <p class="mt-1">
+                  @if (item.productUrl) {
+                    <a href="{{ item.productUrl }}" target="_blank" class="text-blue-500 hover:text-blue-700">
+                      View Product
+                    </a>
+                  } @else {
+                    -
+                  }
+                </p>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (!wishListItems.length) {
+          <div class="text-center py-4 text-gray-500">
+            No wish list items found.
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
+
+<app-rejection-modal
+  *ngIf="showRejectionModal"
+  (confirm)="onConfirmRejection($event)"
+  (cancel)="onCancelRejection()">
+</app-rejection-modal>

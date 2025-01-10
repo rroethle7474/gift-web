@@ -1,0 +1,18 @@
+<div class="fixed inset-0 flex items-center justify-center z-50"
+     *ngIf="isVisible"
+     [@fadeInOut]>
+  <div class="backdrop bg-black bg-opacity-50 absolute inset-0" (click)="onBackdropClick($event)"></div>
+  <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 transform transition-all duration-300 ease-in-out relative">
+    <button
+      (click)="closeModal()"
+      class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+    <div class="text-center">
+      <h2 class="text-4xl font-dancing-script mb-4">Goodbye {{name}}.</h2>
+      <p class="text-2xl font-dancing-script text-gray-600 mb-6">{{timeMessage}}</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,38 @@
+<header class="header">
+  <nav class="nav-container">
+    <!-- Left section -->
+    <div class="nav-left">
+      <a routerLink="/" class="brand">Christmas 2024</a>
+    </div>
+
+    <!-- Center section -->
+    <div class="nav-center">
+      <ng-container *ngIf="authService.isLoggedIn$ | async">
+        <span class="greeting">Hi {{ (authService.currentUser$ | async)?.name }}!</span>
+      </ng-container>
+    </div>
+
+    <!-- Hamburger menu button -->
+    <button class="hamburger-btn" (click)="toggleMenu()" [class.active]="isMenuOpen">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+
+    <!-- Right section -->
+    <div class="nav-right" [class.nav-right-mobile]="isMenuOpen">
+      <ng-container *ngIf="authService.isLoggedIn$ | async; else loginButton">
+        <ng-container *ngIf="(authService.currentUser$ | async)?.isAdmin">
+          <a routerLink="/admin/wish-list-overview" class="nav-link">Overview</a>
+          <a routerLink="/admin/users" class="nav-link">Admin</a>
+        </ng-container>
+        <a routerLink="/wish-list" class="nav-link">Wish List</a>
+        <button (click)="logout()" class="btn-logout">Logout</button>
+      </ng-container>
+
+      <ng-template #loginButton>
+        <a routerLink="/login" class="btn-login">Login</a>
+      </ng-template>
+    </div>
+  </nav>
+</header>

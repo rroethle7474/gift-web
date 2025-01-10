@@ -1,0 +1,58 @@
+.monkey-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.monkey {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    transition: transform 0.3s ease-in-out;
+    will-change: transform, left, top;
+}
+
+.monkey.collision {
+    animation: spin 0.5s ease-in-out;
+}
+
+.monkey-1 {
+    background-image: url('/assets/monkeys/monkey_1.png');
+    -webkit-mask-image: url('/assets/monkeys/monkey_1.png');
+    mask-image: url('/assets/monkeys/monkey_1.png');
+}
+
+.monkey-2 {
+    background-image: url('/assets/monkeys/monkey_2.png');
+    -webkit-mask-image: url('/assets/monkeys/monkey_2.png');
+    mask-image: url('/assets/monkeys/monkey_2.png');
+}
+
+.monkey-3 {
+    background-image: url('/assets/monkeys/monkey_3.png');
+    -webkit-mask-image: url('/assets/monkeys/monkey_3.png');
+    mask-image: url('/assets/monkeys/monkey_3.png');
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(0.8);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}

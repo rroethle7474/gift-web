@@ -1,0 +1,26 @@
+<footer class="footer-container relative">
+  <!-- Wavy Divider -->
+  <div class="wave-container">
+    <svg class="wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 140" preserveAspectRatio="none">
+      <path d="M0,0 C240,100 480,0 720,50 C960,100 1200,0 1440,80 L1440,140 L0,140 Z"></path>
+    </svg>
+  </div>
+
+  <!-- Snowflakes -->
+  <div class="snowflakes">
+    <div *ngFor="let snowflake of snowflakes"
+         class="snowflake"
+         [style.left.px]="snowflake.x"
+         [style.top.px]="snowflake.y"
+         [style.width.px]="snowflake.size"
+         [style.height.px]="snowflake.size">
+    </div>
+  </div>
+
+  <!-- Merry Christmas Message -->
+  <div *ngIf="showMessage"
+       class="christmas-message"
+       [ngStyle]="messageStyle">
+    Merry Christmas!
+  </div>
+</footer>

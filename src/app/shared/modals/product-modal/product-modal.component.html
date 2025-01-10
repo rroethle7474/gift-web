@@ -1,0 +1,18 @@
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Product Link</h2>
+      <button class="close-button" (click)="close.emit()">×</button>
+    </div>
+    <div class="modal-body text-center">
+      <p class="mb-4">You are about to visit:</p>
+      <p class="text-blue-600 mb-6 break-all">{{ url }}</p>
+      <p class="text-gray-600 mb-6">This link will open in a new tab.</p>
+      <button
+        (click)="openInNewTab()"
+        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+        Open Link
+      </button>
+    </div>
+  </div>
+</div>

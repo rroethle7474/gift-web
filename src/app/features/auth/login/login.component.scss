@@ -1,0 +1,12 @@
+.login-container {
+  min-height: 600px;
+  background-color: rgb(243 244 246);
+
+  @media (max-height: 768px) {
+    min-height: 500px;
+  }
+
+  @media (max-height: 640px) {
+    min-height: 400px;
+  }
+}

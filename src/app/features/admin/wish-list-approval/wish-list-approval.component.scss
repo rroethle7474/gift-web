@@ -1,0 +1,11 @@
+// Add any component-specific styles here
+
+@media (max-width: 640px) {
+  .mobile-card {
+    word-break: break-word;
+
+    a {
+      word-break: break-all;
+    }
+  }
+}

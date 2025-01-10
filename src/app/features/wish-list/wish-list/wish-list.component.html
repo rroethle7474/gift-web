@@ -1,0 +1,444 @@
+<app-welcome-modal
+  *ngIf="showWelcomeModal"
+  [name]="currentUser?.name || ''"
+  [sillyDescription]="currentUser?.sillyDescription || ''"
+  [onClose]="onCloseModal.bind(this)"
+></app-welcome-modal>
+
+<div class="wish-list-container">
+  <!-- Add Stepper -->
+  <div class="mb-8">
+    <div class="flex justify-between items-center relative">
+      <!-- Connecting Line -->
+      <div class="absolute top-8 left-0 right-0 h-1 bg-gray-200">
+        <!-- Progress Bar -->
+        <div class="h-full bg-green-500 transition-all duration-300"
+             [style.width]="getStepProgress()">
+        </div>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="flex flex-col items-center relative z-10">
+        <div class="step-circle transition-all duration-300"
+             [class.active-step]="isStepActive(1)"
+             [class.completed-step]="isStepCompleted(1)"
+             [class.inactive-step]="false">
+          1
+        </div>
+        <div class="text-sm font-medium mt-2 transition-all duration-300"
+             [class.text-green-600]="isStepGreen(1)"
+             [class.font-bold]="isStepBold(1)">
+          Select Gifts
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="flex flex-col items-center relative z-10">
+        <div class="step-circle transition-all duration-300"
+             [class.active-step]="isStepActive(2)"
+             [class.completed-step]="isStepCompleted(2)"
+             [class.inactive-step]="!isStepActive(2) && !isStepCompleted(2)">
+          2
+        </div>
+        <div class="text-sm font-medium mt-2 transition-all duration-300"
+             [class.text-green-600]="isStepGreen(2)"
+             [class.font-bold]="isStepBold(2)">
+          Pending Approval
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="flex flex-col items-center relative z-10">
+        <div class="step-circle transition-all duration-300"
+             [class.active-step]="isStepActive(3)"
+             [class.completed-step]="false"
+             [class.inactive-step]="!isStepActive(3)">
+          3
+        </div>
+        <div class="text-sm font-medium mt-2 transition-all duration-300"
+             [class.text-green-600]="isStepGreen(3)"
+             [class.font-bold]="isStepBold(3)">
+          Gifts!!!!!
+        </div>
+      </div>
+    </div>
+  </div>
+    <!-- Shipment Announcement -->
+    @if (submission?.statusId === 2 && submission?.shipmentDate) {
+      <app-shipment-announcement
+        [shipmentDate]="$any(submission).shipmentDate"
+      ></app-shipment-announcement>
+    }
+
+  <!-- Add the new greeting section here -->
+  @if (hasSpendingLimit) {
+    <div class="greeting-section mb-8 p-6 bg-blue-50 rounded-lg shadow-sm">
+      <h2 class="text-2xl font-comic-sans mb-4 text-blue-800">
+        Hi {{ currentUser?.name }}! Since you are one of the world's most special people,
+        you get to spend {{ currentUser?.spendingLimit | currency:'USD':'symbol':'1.0-0' }}!
+      </h2>
+
+      <ul class="text-xl font-comic-sans text-blue-700 space-y-3">
+        <li>Pick out the gifts you'd really like</li>
+        <li>Add as many gifts as you want to your list</li>
+        <li>When you're done, click "Submit Wish List"</li>
+        <li>Santa's helpers will review your list!</li>
+      </ul>
+
+      @if (currentUser?.greetingMessage) {
+        <p class="text-xl font-comic-sans text-blue-700 mt-6 text-center italic">
+          "{{ currentUser?.greetingMessage }}"
+        </p>
+      }
+    </div>
+
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+
+    <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
+
+    <table *ngIf="!(loading$ | async) && wishListItems.length > 0" class="wish-list-table">
+      <thead>
+        <tr>
+          <th>My Wish</th>
+          <th>More Details</th>
+          <th>How many/much?</th>
+          <th>Did you see it online? Paste the link here!</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of wishListItems">
+          <td data-label="My Wish">
+            <ng-container *ngIf="editingItem !== item; else editNameField">
+              {{ item.itemName }}
+            </ng-container>
+            <ng-template #editNameField>
+              <input
+                type="text"
+                [(ngModel)]="editForm!.itemName"
+                class="edit-input"
+                required>
+            </ng-template>
+          </td>
+          <td data-label="More Details">
+            <ng-container *ngIf="editingItem !== item; else editDescField">
+              {{ item.description }}
+            </ng-container>
+            <ng-template #editDescField>
+              <div class="edit-field-container cursor-pointer" (click)="openTextEditModal('description')">
+                <input
+                  type="text"
+                  [(ngModel)]="editForm!.description"
+                  class="edit-input"
+                  [readonly]="true"
+                  [placeholder]="'Click to edit description'">
+                <span class="edit-indicator">✎</span>
+              </div>
+            </ng-template>
+          </td>
+          <td data-label="How many/much?">
+            <ng-container *ngIf="editingItem !== item; else editQuantityField">
+              {{ item.quantity }}
+            </ng-container>
+            <ng-template #editQuantityField>
+              <input
+                type="number"
+                [(ngModel)]="editForm!.quantity"
+                class="edit-input"
+                min="1"
+                required>
+            </ng-template>
+          </td>
+            <td data-label="Product Link">
+            <ng-container *ngIf="editingItem !== item; else editLinkField">
+              <button *ngIf="item.productUrl"
+                      class="text-blue-600 hover:text-blue-800 underline"
+                      (click)="openProductUrl(item.productUrl)">
+                View Product
+              </button>
+            </ng-container>
+            <ng-template #editLinkField>
+              <div class="flex flex-col">
+                <div class="edit-field-container cursor-pointer" (click)="openTextEditModal('productUrl')">
+                  <input
+                    type="url"
+                    [(ngModel)]="editForm!.productUrl"
+                    class="edit-input"
+                    [readonly]="true"
+                    [class.border-red-500]="editForm!.productUrl && !isValidUrl(editForm!.productUrl)"
+                    [placeholder]="'Click to edit URL'">
+                  <span class="edit-indicator">✎</span>
+                </div>
+                <span *ngIf="editForm!.productUrl && !isValidUrl(editForm!.productUrl)"
+                      class="text-red-500 text-sm mt-1">
+                  Please enter a valid URL
+                </span>
+              </div>
+            </ng-template>
+          </td>
+          <td class="actions">
+            <ng-container *ngIf="!submission || submission?.statusId === 0; else viewOnlyActions">
+              <div class="actions-container">
+                <ng-container *ngIf="editingItem !== item; else editActions">
+                  <button class="icon-button" (click)="startEditing(item)">
+                    <i class="edit-icon">✏️</i>
+                  </button>
+                  <button class="icon-button" (click)="confirmDelete(item)">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </ng-container>
+                <ng-template #editActions>
+                  <button class="icon-button"
+                          (click)="saveEdit()"
+                          [disabled]="!isEditFormValid()"
+                          [class.opacity-50]="!isEditFormValid()"
+                          [class.cursor-not-allowed]="!isEditFormValid()">
+                    <i class="save-icon">✓</i>
+                  </button>
+                  <button class="icon-button" (click)="cancelEditing()">
+                    <i class="cancel-icon">⨂</i>
+                  </button>
+                </ng-template>
+              </div>
+            </ng-container>
+            <ng-template #viewOnlyActions>
+              <span class="invisible-placeholder">&#8212;</span>
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="add-gift-container flex-col">
+      <div class="button-group">
+        <ng-container *ngIf="!submission">
+          <button class="add-gift-button transition-all duration-200"
+                  [class.opacity-50]="(loading$ | async) || editingItem !== null"
+                  [class.cursor-not-allowed]="(loading$ | async) || editingItem !== null"
+                  (click)="addGift()"
+                  [disabled]="(loading$ | async) || editingItem !== null">
+            <span class="plus-icon">+</span>
+            Add Gift
+          </button>
+
+          <button *ngIf="!submission"
+                  class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+                  [class.opacity-50]="wishListItems.length === 0"
+                  [class.cursor-not-allowed]="wishListItems.length === 0"
+                  [disabled]="wishListItems.length === 0"
+                  (click)="submitWishList()">
+            Submit Wish List
+          </button>
+        </ng-container>
+
+        <button *ngIf="submission?.statusId === 1"
+                class="edit-submittal-button transition-all duration-200"
+                (click)="confirmEditSubmittal()">
+          Edit Submittal
+        </button>
+      </div>
+        <!-- Add this after the add-gift-container div -->
+    <div class="recommendations-section mt-8" *ngIf="recommendedItems.length > 0">
+      <h2 class="text-2xl font-bold mb-4">Recommended for You</h2>
+
+      <ngx-slick-carousel
+        class="carousel"
+        #slickModal="slick-carousel"
+        [config]="slickConfig">
+
+        <div ngxSlickItem *ngFor="let item of recommendedItems" class="slide-item">
+          <div class="recommendation-card">
+            <div class="image-container">
+              <img [src]="item.productSrcImage || 'assets/images/placeholder.jpg'"
+                   [alt]="item.itemName"
+                   class="product-image"
+                   (error)="onImageError($event)">
+            </div>
+            <div class="content-container">
+              <h3 class="item-title">{{ item.itemName }}</h3>
+              <p class="item-price">{{ item.estimatedCost | currency }}</p>
+              <p class="item-description">{{ item.description }}</p>
+              <div class="action-row">
+                <div class="quantity">
+                  Quantity: {{ item.defaultQuantity }}
+                </div>
+                <button class="add-to-wishlist-btn"
+                        (click)="addRecommendedItemToWishList(item)"
+                        [disabled]="isAddingToWishList || isWishListLocked"
+                        [title]="getAddButtonTooltip()">
+                  {{ getAddButtonText() }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </ngx-slick-carousel>
+    </div>
+
+      <!-- Update submission info -->
+      <div class="submission-info mt-4">
+        <p>Form Status:
+          <span class="font-medium"
+                [ngClass]="{
+                  'text-yellow-500': submission?.statusId === 1,
+                  'text-green-500': submission?.statusId === 2,
+                  'text-red-500': submission?.statusId === 3
+                }">
+            {{ getStatusName(submission?.statusId ?? 0) }}
+          </span>
+        </p>
+        <!-- Formatted dates -->
+        <p>Submission Date: <span class="font-medium">{{ submission?.submissionDate | date:'medium':'UTC' }}</span></p>
+        <p>Last Modified: <span class="font-medium">{{ submission?.lastModified | date:'medium':'UTC' }}</span></p>
+      </div>
+    </div>
+
+    <!-- Submissions History Table -->
+    <div class="submissions-history mt-8" *ngIf="userSubmissions.length > 0">
+      <h2 class="text-xl font-semibold mb-4">Submission History</h2>
+      <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Active</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submission Date</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Modified</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reason</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr *ngFor="let submission of userSubmissions; trackBy: trackBySubmissionId">
+            <td data-label="Status" class="px-6 py-4 whitespace-nowrap">
+              <span [ngClass]="{
+                'text-yellow-500': submission.statusId === 1,
+                'text-green-500': submission.statusId === 2,
+                'text-red-500': submission.statusId === 3
+              }">
+                {{ getStatusName(submission.statusId) }}
+              </span>
+            </td>
+            <td data-label="Active" class="px-6 py-4 whitespace-nowrap">
+              <span [ngClass]="{'text-green-500': submission.isActive, 'text-red-500': !submission.isActive}">
+                {{ submission.isActive ? 'Yes' : 'No' }}
+              </span>
+            </td>
+            <td data-label="Submission Date" class="px-6 py-4 whitespace-nowrap">
+              {{ submission.submissionDate | date:'medium':'UTC' }}
+            </td>
+            <td data-label="Last Modified" class="px-6 py-4 whitespace-nowrap">
+              {{ submission.lastModified | date:'medium':'UTC' }}
+            </td>
+            <td data-label="Reason" class="px-6 py-4">
+              {{ submission.reason || '-' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Modal -->
+    <div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Add New Gift</h2>
+          <button class="close-button" (click)="closeModal()">×</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="itemName">What do you want?<span class="required">*</span></label>
+            <input
+              type="text"
+              id="itemName"
+              [(ngModel)]="giftForm.itemName"
+              placeholder="Example: LEGO City Police Station"
+              name="itemName"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Tell me more about it!</label>
+            <textarea
+              rows="5"
+              id="description"
+              [(ngModel)]="giftForm.description"
+              placeholder="Example: It's on amazon. The big one."
+              name="description"
+              class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="quantity">How many/much would you like?<span class="required">*</span></label>
+            <input
+              type="number"
+              id="quantity"
+              [(ngModel)]="giftForm.quantity"
+              name="quantity"
+              placeholder="Example: 1"
+              min="1"
+              required>
+          </div>
+          <div class="form-group">
+            <label for="productUrl">Did you see it online? Paste the link here!</label>
+            <input
+              type="url"
+              id="productUrl"
+              [(ngModel)]="giftForm.productUrl"
+              placeholder="Example: https://www.amazon.com/dp/B08N5L8N1H"
+              name="productUrl"
+              [class.border-red-500]="giftForm.productUrl && !isValidUrl(giftForm.productUrl)">
+            <span *ngIf="giftForm.productUrl && !isValidUrl(giftForm.productUrl)"
+                  class="text-red-500 text-sm">
+              Please enter a valid URL
+            </span>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="cancel-button" (click)="closeModal()">Cancel</button>
+          <button
+            class="add-button"
+            [disabled]="!isFormValid() || (loading$ | async)"
+            (click)="onSubmit()">
+            {{ (loading$ | async) ? 'Adding...' : 'Add' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add the product modal component -->
+    <app-product-modal
+      *ngIf="showProductModal"
+      [url]="selectedProductUrl"
+      (close)="closeProductModal()">
+    </app-product-modal>
+
+    <app-text-edit-modal
+      *ngIf="showTextEditModal"
+      [title]="textEditTitle"
+      [text]="textEditValue"
+      [placeholder]="textEditPlaceholder"
+      (save)="onTextEditSave($event)"
+      (close)="closeTextEditModal()"
+    ></app-text-edit-modal>
+  } @else {
+    <div class="greeting-section-no-money mb-8 p-6 bg-blue-50 rounded-lg shadow-sm">
+      <h2 class="text-2xl font-comic-sans mb-4 text-blue-800">
+        Hi {{ currentUser?.name }}!
+      </h2>
+      <p class="text-xl font-comic-sans text-blue-700">
+        You don't have a spending limit yet for your upcoming special day, but check back another day or have your parents yell at me. Love you and hope you are doing well!
+      </p>
+      @if (currentUser?.greetingMessage) {
+        <p class="text-xl font-comic-sans text-blue-700 mt-6 text-center italic">
+          "{{ currentUser?.greetingMessage }}"
+        </p>
+      }
+    </div>
+  }
+</div>

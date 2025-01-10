@@ -1,0 +1,178 @@
+<h1 class="text-2xl font-bold mb-6">Submission Status Overview</h1>
+
+<!-- User Summary Table -->
+<div class="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-8">
+  <h2 class="text-xl font-semibold mb-4">User Submission Summary</h2>
+  <div class="overflow-x-auto">
+    <table class="w-full table-auto">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+          <th class="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        @for (summary of userSummaries; track summary.user.userId) {
+          <tr>
+            <td class="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-sm">{{ summary.user.username }}</td>
+            <td class="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-sm">{{ getUserSubmissionStatus(summary) }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (!userSummaries.length) {
+    <div class="text-center py-4 text-gray-500">
+      No users found.
+    </div>
+  }
+</div>
+
+<div class="space-y-8">
+  @for (userGroup of submissionsByUser | keyvalue; track userGroup.key) {
+    <div
+      class="bg-white rounded-lg shadow-md p-4 lg:p-6 cursor-pointer lg:cursor-default"
+      (click)="onMobileRowClick(userGroup)">
+      <h2 class="text-xl font-semibold mb-4">{{ userGroup.key }}'s Submissions</h2>
+
+      <!-- Mobile/Tablet Summary (visible on smaller screens) -->
+      <div class="block lg:hidden">
+        <div class="flex justify-between items-center text-sm">
+          <div class="space-y-2">
+            <div>
+              <span class="text-gray-500">Status:</span>
+              <span class="ml-2">{{ getStatusFriendlyName(userGroup.value.submissions[0].statusId) }}</span>
+            </div>
+            <div class="sm:block">
+              <span class="text-gray-500">Submitted:</span>
+              <span class="ml-2">{{ userGroup.value.submissions[0].submissionDate | date:'shortDate' }}</span>
+            </div>
+          </div>
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Desktop Table (hidden on smaller screens) -->
+      <div class="hidden lg:block overflow-x-auto mb-8">
+        <table class="min-w-full table-auto">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted Date</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Modified</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (submission of userGroup.value.submissions; track submission.submissionId) {
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">{{ submission.submissionId }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ getStatusFriendlyName(submission.statusId) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ submission.submissionDate | date:'medium' }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ submission.lastModified | date:'medium' }}</td>
+                <td class="px-6 py-4 whitespace-nowrap space-x-2">
+                  <button
+                    (click)="onApprove(submission)"
+                    [disabled]="submission.statusId === 2"
+                    [class]="submission.statusId === 2 ?
+                      'bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-md text-sm' :
+                      'bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm'">
+                    {{ submission.statusId === 2 ? 'Approved' : 'Approve' }}
+                  </button>
+                  <button
+                    (click)="onReject(submission)"
+                    [disabled]="submission.statusId !== 1"
+                    [class]="submission.statusId !== 1 ?
+                      'bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-md text-sm' :
+                      'bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm'">
+                    {{ submission.statusId === 3 ? 'Rejected' : 'Reject' }}
+                  </button>
+                  <button
+                    (click)="onViewDetails(submission)"
+                    class="text-gray-600 hover:text-gray-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Wish List Items Table -->
+      <h3 class="text-lg font-medium mb-4">Wish List Items</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full table-auto">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estimated Cost</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product URL</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (item of userGroup.value.wishListItems; track item.itemId) {
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">{{ item.itemName }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ item.description || '-' }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ item.quantity }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ formatCurrency(item.estimatedCost) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  @if (item.productUrl) {
+                    <a href="{{ item.productUrl }}" target="_blank" class="text-blue-500 hover:text-blue-700">
+                      View Product
+                    </a>
+                  } @else {
+                    -
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (!userGroup.value.wishListItems.length) {
+        <div class="text-center py-4 text-gray-500">
+          No wish list items found.
+        </div>
+      }
+    </div>
+  }
+
+  @if (!(submissionsByUser | keyvalue).length) {
+    <div class="text-center py-8 text-gray-500">
+      No submissions found.
+    </div>
+  }
+</div>
+
+<app-shipment-date-modal
+  *ngIf="showShipmentDateModal"
+  [currentDate]="selectedSubmission?.shipmentDate || null"
+  (save)="onSaveShipmentDate($event)"
+  (cancel)="onCancelShipmentDate()">
+</app-shipment-date-modal>
+
+<app-submission-details-modal
+  *ngIf="showDetailsModal"
+  [submission]="selectedSubmission!"
+  (save)="onSaveDetails($event)"
+  (cancel)="onCancelDetails()">
+</app-submission-details-modal>
+
+<app-mobile-submission-details-modal
+  *ngIf="showMobileDetailsModal && selectedSubmission"
+  [submission]="selectedSubmission"
+  [wishListItems]="submissionsByUser[selectedSubmission.userName].wishListItems"
+  (close)="onCloseMobileDetails()"
+  (approve)="onApprove(selectedSubmission)"
+  (reject)="onReject(selectedSubmission)">
+</app-mobile-submission-details-modal>
