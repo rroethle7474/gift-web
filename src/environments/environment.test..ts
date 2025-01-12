@@ -1,10 +1,10 @@
 export const environment = {
   production: false,
-  environment: 'development',
-  apiUrl: '#{DEV_API_URL}#',
+  environment: 'test',
+  apiUrl: '#{TEST_API_URL}#',
   version: '#{BUILD_VERSION}#',
   applicationInsights: {
-    connectionString: '#{DEV_APPINSIGHTS_CONNECTION_STRING}#',
+    connectionString: '#{TEST_APPINSIGHTS_CONNECTION_STRING}#',
     enableDebug: true
   },
   caching: {
