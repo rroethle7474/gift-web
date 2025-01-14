@@ -9,15 +9,15 @@ app.get('/health', (req, res) => {
 });
 
 // Serve static files from the dist directory
-app.use(express.static(path.join(__dirname, 'dist/christmas-gift-app')));
+app.use(express.static(path.join(__dirname, 'dist/christmas-gift-app/browser')));
 
 // Send all requests to index.html
 app.get('/*', function(req, res) {
-  res.sendFile(path.join(__dirname, 'dist/christmas-gift-app/index.html'));
+  res.sendFile(path.join(__dirname, 'dist/christmas-gift-app/browser/index.html'));
 });
 
 // Start the app by listening on the default port
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });
 

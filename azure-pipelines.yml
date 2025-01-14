@@ -60,10 +60,14 @@ stages:
 
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/dist/christmas-gift-app/browser'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/test-app.zip'
+        itemSpec: |
+          dist/**
+          server.js
+          package.json
       displayName: 'Archive Test Build'
 
     # Production Environment Build and Token Replacement
@@ -84,10 +88,14 @@ stages:
 
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/dist/christmas-gift-app/browser'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/prod-app.zip'
+        itemSpec: |
+          dist/**
+          server.js
+          package.json
       displayName: 'Archive Production Build'
 
     - task: PublishBuildArtifacts@1
@@ -111,7 +119,8 @@ stages:
           steps:
           - script: |
               npm install -g pm2
-            displayName: 'Install PM2'
+              npm install express
+            displayName: 'Install Dependencies'
 
           - task: AzureWebApp@1
             inputs:
