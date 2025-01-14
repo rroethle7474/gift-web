@@ -109,12 +109,16 @@ stages:
       runOnce:
         deploy:
           steps:
+          - script: |
+              npm install -g pm2
+            displayName: 'Install PM2'
+
           - task: AzureWebApp@1
             inputs:
               azureSubscription: 'Gift-Web-Connector'
               appName: 'test-gift-web-rpr'
               package: '$(Pipeline.Workspace)/drop/test-app.zip'
-              startUpCommand: 'node server.js'
+              startUpCommand: 'pm2 start server.js --no-daemon'
 
 - stage: DeployProd
   dependsOn: DeployTest
