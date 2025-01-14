@@ -130,7 +130,7 @@ stages:
           steps:
           - task: AzureWebApp@1
             inputs:
-              azureSubscription: 'Gift-Web-Connector
+              azureSubscription: 'Gift-Web-Connector'
               appName: 'prod-gift-web-rpr'
               package: '$(Pipeline.Workspace)/drop/prod-app.zip'
               startUpCommand: 'node server.js'
