@@ -1,78 +1,136 @@
-# Node.js Express Web App to Linux on Azure
-# Build a Node.js Express app and deploy it to Azure as a Linux web app.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
 trigger:
-- main
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+      - README.md
+      - .gitignore
 
 variables:
+  # Build Configuration
+  nodeVersion: '20.x'
+  buildConfiguration: '--configuration=production'
 
-  # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: '22e83eaa-6e69-4d64-b0e7-2cd884be6f1a'
+  # Automatic version number generation
+  major: '1'
+  minor: '0'
 
-  # Web app name
-  webAppName: 'test-gift-web-rpr'
+  # Build version variable
+  ${{ if eq(variables['Build.SourceBranchName'], 'main') }}:
+    buildVersion: $(major).$(minor).$(Build.BuildId)
+  ${{ else }}:
+    buildVersion: $(major).$(minor).$(Build.BuildId)-$(Build.SourceBranchName)
 
-  # Environment name
-  environmentName: 'test-gift-web-rpr'
-
-  # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+  # Note: TEST_API_URL, PROD_API_URL, and AppInsights connection strings
+  # should be defined in Azure DevOps Pipeline variables UI
 
 stages:
 - stage: Build
-  displayName: Build stage
   jobs:
-  - job: Build
-    displayName: Build
+  - job: BuildApp
     pool:
-      vmImage: $(vmImageName)
-
+      vmImage: 'ubuntu-latest'
     steps:
     - task: NodeTool@0
       inputs:
-        versionSpec: '20.x'
+        versionSpec: $(nodeVersion)
       displayName: 'Install Node.js'
 
     - script: |
-        npm install
-        npm run build --if-present
-        npm run test --if-present
-      displayName: 'npm install, build and test'
+        npm install -g @angular/cli
+        npm ci
+      displayName: 'Install Dependencies'
+
+    # Test Environment Build and Token Replacement
+    - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+      inputs:
+        targetFiles: 'src/environments/environment.test.ts'
+        tokenPattern: 'hash'  # This matches #{TOKEN}# pattern
+        writeBOM: true
+      displayName: 'Replace Tokens in Test Environment'
+      env:
+        TEST_API_URL: $(TEST_API_URL)
+        BUILD_VERSION: $(BUILD_VERSION)
+        TEST_APPINSIGHTS_CONNECTION_STRING: $(TEST_APPINSIGHTS_CONNECTION_STRING)
+
+    - script: |
+        ng build --configuration=test
+      displayName: 'Build Angular App (Test)'
 
     - task: ArchiveFiles@2
-      displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/dist/christmas-gift-app/browser'
         includeRootFolder: false
-        archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-        replaceExistingArchive: true
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/test-app.zip'
+      displayName: 'Archive Test Build'
 
-    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-      artifact: drop
+    # Production Environment Build and Token Replacement
+    - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+      inputs:
+        targetFiles: 'src/environments/environment.production.ts'
+        tokenPattern: 'hash'  # This matches #{TOKEN}# pattern
+        writeBOM: true
+      displayName: 'Replace Tokens in Production Environment'
+      env:
+        PROD_API_URL: $(PROD_API_URL)
+        BUILD_VERSION: $(BUILD_VERSION)
+        PROD_APPINSIGHTS_CONNECTION_STRING: $(PROD_APPINSIGHTS_CONNECTION_STRING)
 
-- stage: Deploy
-  displayName: Deploy stage
+    - script: |
+        ng build --configuration=production
+      displayName: 'Build Angular App (Prod)'
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/dist/christmas-gift-app/browser'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/prod-app.zip'
+      displayName: 'Archive Production Build'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+      displayName: 'Publish Build Artifacts'
+
+- stage: DeployTest
   dependsOn: Build
   condition: succeeded()
   jobs:
-  - deployment: Deploy
-    displayName: Deploy
-    environment: $(environmentName)
+  - deployment: DeployTest
     pool:
-      vmImage: $(vmImageName)
+      vmImage: 'ubuntu-latest'
+    environment: 'test'
     strategy:
       runOnce:
         deploy:
           steps:
           - task: AzureWebApp@1
-            displayName: 'Azure Web App Deploy: test-gift-web-rpr'
             inputs:
-              azureSubscription: $(azureSubscription)
-              appType: webAppLinux
-              appName: $(webAppName)
-              runtimeStack: 'NODE|20LTS'
-              package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
-              startUpCommand: 'npm run start'
+              azureSubscription: 'Your-Azure-Service-Connection'
+              appName: 'your-test-app-name'
+              package: '$(Pipeline.Workspace)/drop/test-app.zip'
+              startUpCommand: 'node server.js'
+
+- stage: DeployProd
+  dependsOn: DeployTest
+  condition: succeeded()
+  jobs:
+  - deployment: DeployProd
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: 'Your-Azure-Service-Connection'
+              appName: 'your-prod-app-name'
+              package: '$(Pipeline.Workspace)/drop/prod-app.zip'
+              startUpCommand: 'node server.js'
