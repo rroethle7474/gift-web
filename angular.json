@@ -20,7 +20,7 @@
             "outputPath": "dist/christmas-gift-app",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": [s
+            "polyfills": [
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",

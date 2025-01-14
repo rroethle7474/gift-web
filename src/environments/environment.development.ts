@@ -1,17 +1,10 @@
 export const environment = {
   production: false,
-  environment: 'development',
-  apiUrl: '#{DEV_API_URL}#',
-  version: '#{BUILD_VERSION}#',
+  environment: 'local',
+  apiUrl: 'https://localhost:7205/api',
+  version: '1.0.0',
   applicationInsights: {
-    connectionString: '#{DEV_APPINSIGHTS_CONNECTION_STRING}#',
+    connectionString: '',
     enableDebug: true
-  },
-  caching: {
-    defaultDuration: 24 * 60 * 60 * 1000,
-  },
-  features: {
-    enableRecommendations: true,
-    enableNotifications: true
   }
 };

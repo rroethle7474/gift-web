@@ -6,12 +6,5 @@ export const environment = {
   applicationInsights: {
     connectionString: '#{TEST_APPINSIGHTS_CONNECTION_STRING}#',
     enableDebug: true
-  },
-  caching: {
-    defaultDuration: 24 * 60 * 60 * 1000,
-  },
-  features: {
-    enableRecommendations: true,
-    enableNotifications: true
   }
 };
