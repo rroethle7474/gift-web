@@ -1,29 +1,36 @@
 // login.component.ts
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { GoodbyeModalComponent } from '../../../shared/modals/goodbye-modal/goodbye-modal.component';
+import { environment } from '../../../../environments/environment';
+import { User } from '../../../shared/models/user.interface';
+import { UserService } from '../../../core/services/user.service';
 
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, GoodbyeModalComponent],
+    imports: [CommonModule, ReactiveFormsModule, FormsModule, GoodbyeModalComponent],
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
     loginForm: FormGroup;
     isLoading = false;
     errorMessage: string | null = null;
     showPassword = false;
     showGoodbyeModal = false;
     userName = '';
+    isDemoMode = environment.demoMode;
+    guestUsers: User[] = [];
+    selectedGuestUser: User | null = null;
 
     constructor(
         private fb: FormBuilder,
         private authService: AuthService,
+        private userService: UserService,
         private router: Router
     ) {
         this.loginForm = this.fb.group({
@@ -39,6 +46,30 @@ export class LoginComponent {
             this.showGoodbyeModal = true;
             this.userName = state.userName || '';
         }
+    }
+
+    ngOnInit(): void {
+        if (this.isDemoMode) {
+            this.loadGuestUsers();
+        }
+    }
+
+    loadGuestUsers(): void {
+        // TODO: Replace with actual API call when available
+        this.userService.getAllUsers().subscribe({
+            next: (users) => {
+              if (users) {
+                this.guestUsers = users.filter(user => user.isGuestUser);
+              }
+              else {
+                this.guestUsers = [];
+              }
+            },
+            error: () => {
+                // Silently handle the error by setting an empty array
+                this.guestUsers = [];
+            }
+        });
     }
 
     togglePasswordVisibility(): void {
@@ -58,6 +89,26 @@ export class LoginComponent {
                 },
                 error: (error) => {
                     this.errorMessage = error.error?.message || 'An error occurred during sign in';
+                    this.isLoading = false;
+                }
+            });
+        }
+    }
+
+    loginAsGuest(): void {
+        if (this.selectedGuestUser) {
+            this.isLoading = true;
+            this.errorMessage = null;
+
+            // TODO: Replace with actual guest login API call when available
+            this.authService.login(this.selectedGuestUser.username!, 'guest-password').subscribe({
+                next: () => {
+                    this.router.navigate(['/wish-list'], {
+                        state: { showWelcomeModal: true, fromLogin: true }
+                    });
+                },
+                error: (error) => {
+                    this.errorMessage = error.error?.message || 'An error occurred during guest sign in';
                     this.isLoading = false;
                 }
             });

@@ -4,6 +4,7 @@ export interface User {
     name?: string;
     email?: string;
     isAdmin?: boolean;
+    isGuestUser?: boolean;
     spendingLimit?: number;
     sillyDescription?: string | null;
     greetingMessage?: string | null;
@@ -30,6 +31,7 @@ export interface CreateUserRequest {
     email: string;
     name: string;
     isAdmin: boolean;
+    isGuestUser: boolean;
     spendingLimit: number | null;
     sillyDescription: string | null;
     greetingMessage: string | null;
@@ -45,6 +47,7 @@ export interface UpdateUserRequest {
     email?: string;
     name?: string;
     isAdmin?: boolean;
+    isGuestUser?: boolean;
     spendingLimit?: number | null;
     sillyDescription?: string | null;
     greetingMessage?: string | null;

@@ -53,6 +53,7 @@ stages:
         TEST_API_URL: $(TEST_API_URL)
         BUILD_VERSION: $(BUILD_VERSION)
         TEST_APPINSIGHTS_CONNECTION_STRING: $(TEST_APPINSIGHTS_CONNECTION_STRING)
+        TEST_DEMO_MODE: $(TEST_DEMO_MODE)
 
     - script: |
         ng build --configuration=test
@@ -81,6 +82,7 @@ stages:
         PROD_API_URL: $(PROD_API_URL)
         BUILD_VERSION: $(BUILD_VERSION)
         PROD_APPINSIGHTS_CONNECTION_STRING: $(PROD_APPINSIGHTS_CONNECTION_STRING)
+        PROD_DEMO_MODE: $(PROD_DEMO_MODE)
 
     - script: |
         ng build --configuration=production

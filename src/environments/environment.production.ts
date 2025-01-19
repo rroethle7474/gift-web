@@ -3,6 +3,7 @@ export const environment = {
   environment: 'production',
   apiUrl: '#{PROD_API_URL}#',
   version: '#{BUILD_VERSION}#',
+  demoMode: '#{PROD_DEMO_MODE}#'.toLowerCase() === 'true' || false,
   applicationInsights: {
     connectionString: '#{PROD_APPINSIGHTS_CONNECTION_STRING}#',
     enableDebug: false
