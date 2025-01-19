@@ -24,6 +24,9 @@ variables:
 
   # Note: TEST_API_URL, PROD_API_URL, and AppInsights connection strings
   # should be defined in Azure DevOps Pipeline variables UI
+  # Additional variables needed:
+  # - TEST_INITIAL_SETUP: true/false for enabling initial setup mode in test
+  # - PROD_INITIAL_SETUP: true/false for enabling initial setup mode in prod
 
 stages:
 - stage: Build
@@ -54,6 +57,7 @@ stages:
         BUILD_VERSION: $(BUILD_VERSION)
         TEST_APPINSIGHTS_CONNECTION_STRING: $(TEST_APPINSIGHTS_CONNECTION_STRING)
         TEST_DEMO_MODE: $(TEST_DEMO_MODE)
+        TEST_INITIAL_SETUP: $(TEST_INITIAL_SETUP)
 
     - script: |
         ng build --configuration=test
@@ -83,6 +87,7 @@ stages:
         BUILD_VERSION: $(BUILD_VERSION)
         PROD_APPINSIGHTS_CONNECTION_STRING: $(PROD_APPINSIGHTS_CONNECTION_STRING)
         PROD_DEMO_MODE: $(PROD_DEMO_MODE)
+        PROD_INITIAL_SETUP: $(PROD_INITIAL_SETUP)
 
     - script: |
         ng build --configuration=production

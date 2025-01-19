@@ -21,13 +21,15 @@
 
     <!-- Right section -->
     <div class="nav-right" [class.nav-right-mobile]="isMenuOpen">
-      <ng-container *ngIf="authService.isLoggedIn$ | async; else loginButton">
-        <ng-container *ngIf="(authService.currentUser$ | async)?.isAdmin">
+      <ng-container *ngIf="showMenu$ | async; else loginButton">
+        <ng-container *ngIf="showAdminLinks$ | async">
           <a routerLink="/admin/wish-list-overview" class="nav-link">Overview</a>
           <a routerLink="/admin/users" class="nav-link">Admin</a>
         </ng-container>
-        <a routerLink="/wish-list" class="nav-link">Wish List</a>
-        <button (click)="logout()" class="btn-logout">Logout</button>
+        <ng-container *ngIf="authService.isLoggedIn$ | async">
+          <a routerLink="/wish-list" class="nav-link">Wish List</a>
+          <button (click)="logout()" class="btn-logout">Logout</button>
+        </ng-container>
       </ng-container>
 
       <ng-template #loginButton>

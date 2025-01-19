@@ -26,6 +26,7 @@ import { PhoneNumberPipe } from '../../../shared/pipes/phone-number.pipe';
 })
 export class UserManagementComponent implements OnInit {
   userForm: FormGroup;
+  guestUserForm: FormGroup;
   passwordForm: FormGroup;
   editForm: FormGroup | null = null;
   additionalPropertiesForm: FormGroup | null = null;
@@ -68,6 +69,15 @@ export class UserManagementComponent implements OnInit {
       parentPhone1: ['', [Validators.pattern(/^\(\d{3}\) \d{3}-\d{4}$/)]],
       parentPhone2: ['', [Validators.pattern(/^\(\d{3}\) \d{3}-\d{4}$/)]],
       birthday: [null]
+    });
+
+    this.guestUserForm = this.fb.group({
+      username: ['', [Validators.required]],
+      password: ['', [Validators.required]],
+      name: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      birthday: [null],
+      sillyDescription: ['']
     });
 
     this.passwordForm = this.fb.group({
@@ -122,6 +132,32 @@ export class UserManagementComponent implements OnInit {
         },
         error: (error) => {
           this.notificationService.error(error.error?.message || 'Failed to create user');
+          this.isLoading = false;
+        }
+      });
+    } else {
+      this.notificationService.warning('Please fill in all required fields correctly');
+    }
+  }
+
+  onGuestUserSubmit(): void {
+    if (this.guestUserForm.valid) {
+      this.isLoading = true;
+      const guestUserData = {
+        ...this.guestUserForm.value,
+        isGuestUser: true,
+        isAdmin: false
+      };
+
+      this.userService.createUser(guestUserData).subscribe({
+        next: () => {
+          this.notificationService.success('Guest user created successfully');
+          this.loadUsers();
+          this.guestUserForm.reset();
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.notificationService.error(error.error?.message || 'Failed to create guest user');
           this.isLoading = false;
         }
       });

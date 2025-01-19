@@ -4,6 +4,7 @@ export const environment = {
   apiUrl: 'https://localhost:7205/api',
   version: '1.0.0',
   demoMode: true,
+  initialSetup: false,
   applicationInsights: {
     connectionString: '',
     enableDebug: true

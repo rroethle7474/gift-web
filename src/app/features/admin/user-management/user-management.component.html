@@ -198,6 +198,9 @@
                                             @if (user.isAdmin) {
                                                 <span class="badge badge-admin">Admin</span>
                                             }
+                                            @if (user.isGuestUser) {
+                                                <span class="badge badge-guest">Guest</span>
+                                            }
                                         </span>
                                     </td>
                                     <td class="table-cell">
@@ -210,10 +213,10 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                                 </svg>
                                             </button>
-                                            <button (click)="deleteUser(user.userId)"
-                                                    class="p-2 text-red-600 hover:text-red-800"
-                                                    [disabled]="isLoading"
-                                                    title="Delete">
+                                    <button (click)="deleteUser(user.userId)"
+                                            class="p-2 text-red-600 hover:text-red-800"
+                                            [disabled]="isLoading"
+                                            title="Delete">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                 </svg>
@@ -418,6 +421,72 @@
                 </div>
             }
         </div>
+    </div>
+
+    <!-- Create Guest User -->
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-8 mt-8">
+        <h2 class="text-xl font-semibold mb-4">Create Guest User</h2>
+        <form [formGroup]="guestUserForm" (ngSubmit)="onGuestUserSubmit()" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="guestUsername">
+                        Username *
+                    </label>
+                    <input class="form-input" id="guestUsername" type="text" formControlName="username" placeholder="Username">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="guestPassword">
+                        Password *
+                    </label>
+                    <input class="form-input" id="guestPassword" type="password" formControlName="password" placeholder="Password">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="guestName">
+                        Name *
+                    </label>
+                    <input class="form-input" id="guestName" type="text" formControlName="name" placeholder="Name">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="guestEmail">
+                        Email *
+                    </label>
+                    <input class="form-input" id="guestEmail" type="email" formControlName="email" placeholder="Email">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="guestSillyDescription">
+                        Silly Description
+                    </label>
+                    <input class="form-input"
+                           id="guestSillyDescription"
+                           type="text"
+                           formControlName="sillyDescription"
+                           placeholder="Enter a silly description">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="guestBirthday">
+                        Birthday
+                    </label>
+                    <input type="date"
+                           id="guestBirthday"
+                           formControlName="birthday"
+                           class="form-input w-full"
+                           placeholder="Select birthday" />
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end mt-6">
+                <button type="submit"
+                        [disabled]="!guestUserForm.valid || isLoading"
+                        class="btn-primary">
+                    {{ isLoading ? 'Creating...' : 'Create Guest User' }}
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 

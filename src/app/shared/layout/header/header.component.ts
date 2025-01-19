@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { filter } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -13,6 +15,15 @@ import { filter } from 'rxjs/operators';
 })
 export class HeaderComponent {
   isMenuOpen = false;
+  readonly environment = environment;
+
+  showAdminLinks$ = this.authService.currentUser$.pipe(
+    map(user => this.environment.initialSetup || user?.isAdmin || false)
+  );
+
+  showMenu$ = this.authService.isLoggedIn$.pipe(
+    map(isLoggedIn => isLoggedIn || this.environment.initialSetup)
+  );
 
   constructor(
     public authService: AuthService,
