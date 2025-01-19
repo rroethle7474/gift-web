@@ -81,7 +81,11 @@ export class LoginComponent implements OnInit {
             this.isLoading = true;
             this.errorMessage = null;
 
-            this.authService.login(this.loginForm.value.username, this.loginForm.value.password).subscribe({
+            this.authService.login(
+                this.loginForm.value.username,
+                this.loginForm.value.password,
+                false
+            ).subscribe({
                 next: () => {
                     this.router.navigate(['/wish-list'], {
                         state: { showWelcomeModal: true, fromLogin: true }
@@ -100,8 +104,11 @@ export class LoginComponent implements OnInit {
             this.isLoading = true;
             this.errorMessage = null;
 
-            // TODO: Replace with actual guest login API call when available
-            this.authService.login(this.selectedGuestUser.username!, 'guest-password').subscribe({
+            this.authService.login(
+                this.selectedGuestUser.username!,
+                'GUEST_USER_PASSWORD',
+                true
+            ).subscribe({
                 next: () => {
                     this.router.navigate(['/wish-list'], {
                         state: { showWelcomeModal: true, fromLogin: true }

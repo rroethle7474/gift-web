@@ -28,8 +28,8 @@ export class AuthService {
     private router: Router
   ) {}
 
-  login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password })
+  login(username: string, password: string, isGuestUser: boolean = false): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password, isGuestUser })
       .pipe(
         tap(response => {
           localStorage.setItem('token', response.token);
