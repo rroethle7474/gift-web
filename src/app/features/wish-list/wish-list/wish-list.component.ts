@@ -74,6 +74,7 @@ export class WishListComponent implements OnInit {
     0: 'Not Submitted',
     1: 'Pending Approval',
     2: 'Completed',
+    3: 'Rejected'
   };
 
   showWelcomeModal = false;

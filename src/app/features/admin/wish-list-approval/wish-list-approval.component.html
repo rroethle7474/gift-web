@@ -23,8 +23,8 @@
           <div class="flex space-x-2 w-full sm:w-auto">
             <button
               (click)="onApprove()"
-              [disabled]="submission.statusId === 2"
-              [class]="submission.statusId === 2 ?
+              [disabled]="submission.statusId === 2 || submission.statusId === 3"
+              [class]="submission.statusId === 2 || submission.statusId === 3 ?
                 'flex-1 sm:flex-none bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-md text-sm' :
                 'flex-1 sm:flex-none bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm'">
               {{ submission.statusId === 2 ? 'Approved' : 'Approve' }}

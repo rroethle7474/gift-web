@@ -7,10 +7,6 @@ export const routes: Routes = [
         loadComponent: () => import('./features/home/hero-section/hero-section.component').then(m => m.HeroSectionComponent)
     },
     {
-      path: 'landing',
-      loadComponent: () => import('./features/home/landing/landing.component').then(m => m.LandingComponent)
-    },
-    {
       path: 'wish-list',
       loadComponent: () => import('./features/wish-list/wish-list/wish-list.component').then(m => m.WishListComponent),
       canActivate: [authGuard]
