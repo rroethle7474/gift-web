@@ -69,12 +69,18 @@
       <div class="flex gap-3 pt-4">
         <button
           (click)="onApprove()"
-          class="flex-1 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm">
+          [disabled]="isGuestUser"
+          [class]="isGuestUser ?
+            'flex-1 bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-md text-sm' :
+            'flex-1 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm'">
           Approve
         </button>
         <button
           (click)="onReject()"
-          class="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm">
+          [disabled]="isGuestUser"
+          [class]="isGuestUser ?
+            'flex-1 bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-md text-sm' :
+            'flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm'">
           Reject
         </button>
       </div>

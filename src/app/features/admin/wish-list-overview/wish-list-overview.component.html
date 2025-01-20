@@ -1,3 +1,22 @@
+<div *ngIf="isGuestUser" class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+  <div class="flex items-center">
+    <div class="flex-shrink-0">
+      <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+      </svg>
+    </div>
+    <div class="ml-3">
+      <p class="text-sm text-blue-700">
+        Account is only for demo purposes. Some actions may not be available.
+        <a href="/auth/login" class="font-medium underline hover:text-blue-600">
+          Sign in with a full account
+        </a>
+        to access all features.
+      </p>
+    </div>
+  </div>
+</div>
+
 <h1 class="text-2xl font-bold mb-6">Submission Status Overview</h1>
 
 <!-- User Summary Table -->
@@ -76,23 +95,24 @@
                 <td class="px-6 py-4 whitespace-nowrap space-x-2">
                   <button
                     (click)="onApprove(submission)"
-                    [disabled]="submission.statusId === 2"
-                    [class]="submission.statusId === 2 ?
+                    [disabled]="submission.statusId === 2 || isGuestUser"
+                    [class]="(submission.statusId === 2 || isGuestUser) ?
                       'bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-md text-sm' :
                       'bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm'">
                     {{ submission.statusId === 2 ? 'Approved' : 'Approve' }}
                   </button>
                   <button
                     (click)="onReject(submission)"
-                    [disabled]="submission.statusId !== 1"
-                    [class]="submission.statusId !== 1 ?
+                    [disabled]="submission.statusId !== 1 || isGuestUser"
+                    [class]="(submission.statusId !== 1 || isGuestUser) ?
                       'bg-gray-400 cursor-not-allowed text-white px-4 py-2 rounded-md text-sm' :
                       'bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm'">
                     {{ submission.statusId === 3 ? 'Rejected' : 'Reject' }}
                   </button>
                   <button
                     (click)="onViewDetails(submission)"
-                    class="text-gray-600 hover:text-gray-800">
+                    [class]="isGuestUser ? 'text-gray-400 cursor-not-allowed' : 'text-gray-600 hover:text-gray-800'"
+                    [disabled]="isGuestUser">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -172,6 +192,7 @@
   *ngIf="showMobileDetailsModal && selectedSubmission"
   [submission]="selectedSubmission"
   [wishListItems]="submissionsByUser[selectedSubmission.userName].wishListItems"
+  [isGuestUser]="isGuestUser"
   (close)="onCloseMobileDetails()"
   (approve)="onApprove(selectedSubmission)"
   (reject)="onReject(selectedSubmission)">

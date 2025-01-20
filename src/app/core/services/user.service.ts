@@ -29,10 +29,10 @@ export class UserService {
     }
 
     updateUser(id: number, user: UpdateUserRequest): Observable<User> {
-      console.log("HERE IN THE SERVICE");
         const payload = {
             ...user,
-            isAdmin: user.isAdmin !== undefined ? !!user.isAdmin : undefined
+            isAdmin: user.isAdmin !== undefined ? !!user.isAdmin : undefined,
+            isGuestUser: user.isGuestUser !== undefined ? !!user.isGuestUser : undefined
         };
         return this.http.put<User>(`${this.apiUrl}/${id}`, payload);
     }

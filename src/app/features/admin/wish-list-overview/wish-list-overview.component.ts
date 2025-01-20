@@ -11,6 +11,7 @@ import { ShipmentDateModalComponent } from '../../../shared/modals/shipment-date
 import { SubmissionDetailsModalComponent } from '../../../shared/modals/submission-details-modal/submission-details-modal.component';
 import { MobileSubmissionDetailsModalComponent } from '../../../shared/modals/mobile-submission-details-modal/mobile-submission-details-modal.component';
 import { BreakpointService } from '../../../core/services/breakpoint.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 interface UserSubmissionData {
   submissions: WishListSubmission[];
@@ -36,15 +37,28 @@ export class WishListOverviewComponent implements OnInit {
   selectedSubmission: WishListSubmission | null = null;
   showDetailsModal = false;
   showMobileDetailsModal = false;
+  isGuestUser = false;
 
   constructor(
     private wishListSubmissionService: WishListSubmissionService,
     private wishListService: WishListService,
     private userService: UserService,
-    private breakpointService: BreakpointService
+    private breakpointService: BreakpointService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    // Check if current user is a guest
+    this.authService.currentUser$.subscribe({
+      next: (user: User | null) => {
+        this.isGuestUser = user?.isGuestUser ?? false;
+      },
+      error: (error: any) => {
+        console.error('Error getting current user:', error);
+        this.isGuestUser = false;
+      }
+    });
+
     this.loadUserSummaries();
     this.loadSubmissions();
   }

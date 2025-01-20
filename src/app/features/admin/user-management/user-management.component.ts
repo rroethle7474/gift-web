@@ -10,6 +10,7 @@ import { WishListRecommendationsService } from '../../../core/services/wish-list
 import { CreateRecommendWishListItemDto } from '../../../core/models/create-recommend-wish-list-item.dto';
 import { RecommendedWishListItem } from '../../../core/models/recommended-wish-list-item';
 import { PhoneNumberPipe } from '../../../shared/pipes/phone-number.pipe';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-user-management',
@@ -49,12 +50,14 @@ export class UserManagementComponent implements OnInit {
   editRecommendationForm: FormGroup | null = null;
   expandedUserId: number | null = null;
   isEditingAdditionalProperties: boolean = false;
+  isGuestUser = false;
 
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
     private notificationService: NotificationService,
-    private wishListRecommendationsService: WishListRecommendationsService
+    private wishListRecommendationsService: WishListRecommendationsService,
+    private authService: AuthService
   ) {
     this.userForm = this.fb.group({
       username: ['', [Validators.required]],
@@ -102,6 +105,16 @@ export class UserManagementComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.authService.currentUser$.subscribe({
+      next: (user) => {
+        this.isGuestUser = user?.isGuestUser ?? false;
+      },
+      error: (error) => {
+        console.error('Error getting current user:', error);
+        this.isGuestUser = false;
+      }
+    });
+
     this.loadUsers();
   }
 

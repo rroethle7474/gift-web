@@ -30,6 +30,10 @@ export const routes: Routes = [
           {
               path: 'users',
               loadComponent: () => import('./features/admin/user-management/user-management.component').then(m => m.UserManagementComponent)
+          },
+          {
+              path: 'wish-list-overview',
+              loadComponent: () => import('./features/admin/wish-list-overview/wish-list-overview.component').then(m => m.WishListOverviewComponent)
           }
       ]
   }

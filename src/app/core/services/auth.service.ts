@@ -43,6 +43,29 @@ export class AuthService {
   logout(): void {
     const currentUser = this.getCurrentUser();
 
+    if (currentUser?.isGuestUser) {
+      // Make API call for guest user logout
+      this.http.post<boolean>(`${this.apiUrl}/logout`, {
+        username: currentUser.username,
+        isGuestUser: currentUser.isGuestUser
+      }).subscribe({
+        next: (response) => {
+          this.performLogout(currentUser);
+        },
+        error: (error) => {
+          console.error('Error during guest logout:', error);
+          // Still perform logout even if API call fails
+          this.performLogout(currentUser);
+        }
+      });
+    } else {
+      // Regular user logout
+      this.performLogout(currentUser);
+    }
+  }
+
+  // Helper method to handle the common logout logic
+  private performLogout(currentUser: User | null): void {
     // Clear all auth-related storage first
     localStorage.removeItem('token');
     localStorage.removeItem('user');

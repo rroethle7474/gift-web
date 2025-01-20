@@ -13,6 +13,7 @@ import { WishListItem } from '../../../core/models/wish-list-item';
 export class MobileSubmissionDetailsModalComponent {
   @Input() submission!: WishListSubmission;
   @Input() wishListItems: WishListItem[] = [];
+  @Input() isGuestUser = false;
   @Output() close = new EventEmitter<void>();
   @Output() approve = new EventEmitter<void>();
   @Output() reject = new EventEmitter<void>();

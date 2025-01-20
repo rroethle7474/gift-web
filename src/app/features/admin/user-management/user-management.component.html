@@ -1,8 +1,28 @@
 <div class="container mx-auto px-4 py-8">
+    <!-- Add the banner -->
+    <div *ngIf="isGuestUser" class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-blue-700">
+                    Account is only for demo purposes. Some actions may not be available.
+                    <a href="/auth/login" class="font-medium underline hover:text-blue-600">
+                        Sign in with a full account
+                    </a>
+                    to access all features.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <h1 class="text-3xl font-bold mb-8">User Management</h1>
 
     <!-- User Creation Form -->
-    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-8">
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-8" [class.opacity-50]="isGuestUser">
         <h2 class="text-xl font-semibold mb-4">Create New User</h2>
         <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -107,12 +127,16 @@
 
             <div class="flex items-center justify-end mt-6">
                 <button type="submit"
-                        [disabled]="!userForm.valid || isLoading"
+                        [disabled]="!userForm.valid || isLoading || isGuestUser"
                         class="btn-primary">
                     {{ isLoading ? 'Creating...' : 'Create User' }}
                 </button>
             </div>
         </form>
+        <!-- Add message for guest users -->
+        <div *ngIf="isGuestUser" class="mt-4 text-sm text-gray-500 text-center">
+            Creating new users is not available in demo mode
+        </div>
     </div>
 
     <!-- User List -->
@@ -205,44 +229,46 @@
                                     </td>
                                     <td class="table-cell">
                                         <div class="flex items-center justify-center gap-2">
-                                            <button (click)="startEditing(user)"
-                                                    class="p-2 text-blue-600 hover:text-blue-800"
-                                                    [disabled]="isLoading"
-                                                    title="Edit">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                                </svg>
-                                            </button>
-                                    <button (click)="deleteUser(user.userId)"
-                                            class="p-2 text-red-600 hover:text-red-800"
-                                            [disabled]="isLoading"
-                                            title="Delete">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                </svg>
-                                            </button>
-                                            <button (click)="openPasswordModal(user.userId)"
-                                                    class="p-2 text-yellow-600 hover:text-yellow-800"
-                                                    [disabled]="isLoading"
-                                                    title="Change Password">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
-                                                </svg>
-                                            </button>
+                                            @if (!isGuestUser) {
+                                                <button (click)="startEditing(user)"
+                                                        class="p-2 text-blue-600 hover:text-blue-800"
+                                                        [disabled]="isLoading"
+                                                        title="Edit">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                    </svg>
+                                                </button>
+                                                <button (click)="deleteUser(user.userId)"
+                                                        class="p-2 text-red-600 hover:text-red-800"
+                                                        [disabled]="isLoading"
+                                                        title="Delete">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                    </svg>
+                                                </button>
+                                                <button (click)="openPasswordModal(user.userId)"
+                                                        class="p-2 text-yellow-600 hover:text-yellow-800"
+                                                        [disabled]="isLoading"
+                                                        title="Change Password">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                                    </svg>
+                                                </button>
+                                                <button (click)="openRecommendationModal(user)"
+                                                        class="p-2 text-purple-600 hover:text-purple-800"
+                                                        [disabled]="isLoading"
+                                                        title="Add Recommendation">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13H4a2 2 0 01-2-2V6a2 2 0 012-2h16a2 2 0 012 2v3a2 2 0 01-2 2h-8z"></path>
+                                                    </svg>
+                                                </button>
+                                            }
                                             <button (click)="openAdditionalPropertiesModal(user)"
                                                     class="p-2 text-blue-600 hover:text-blue-800"
                                                     [disabled]="isLoading"
                                                     title="Additional Info">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                </svg>
-                                            </button>
-                                            <button (click)="openRecommendationModal(user)"
-                                                    class="p-2 text-purple-600 hover:text-purple-800"
-                                                    [disabled]="isLoading"
-                                                    title="Add Recommendation">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13H4a2 2 0 01-2-2V6a2 2 0 012-2h16a2 2 0 012 2v3a2 2 0 01-2 2h-8z"></path>
                                                 </svg>
                                             </button>
                                             <button (click)="openRecommendationsViewModal(user)"
@@ -356,33 +382,35 @@
 
                     @if (expandedUserId === user.userId) {
                         <div class="user-card-expanded">
-                            <div class="action-group">
-                                <span class="action-label">User Management</span>
-                                <button (click)="startEditing(user)"
-                                        class="btn-icon"
-                                        [disabled]="isLoading"
-                                        title="Edit">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                    </svg>
-                                </button>
-                                <button (click)="deleteUser(user.userId)"
-                                        class="btn-icon text-red-600"
-                                        [disabled]="isLoading"
-                                        title="Delete">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                    </svg>
-                                </button>
-                                <button (click)="openPasswordModal(user.userId)"
-                                        class="btn-icon text-yellow-600"
-                                        [disabled]="isLoading"
-                                        title="Change Password">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
-                                    </svg>
-                                </button>
-                            </div>
+                            @if (!isGuestUser) {
+                                <div class="action-group">
+                                    <span class="action-label">User Management</span>
+                                    <button (click)="startEditing(user)"
+                                            class="btn-icon"
+                                            [disabled]="isLoading"
+                                            title="Edit">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </button>
+                                    <button (click)="deleteUser(user.userId)"
+                                            class="btn-icon text-red-600"
+                                            [disabled]="isLoading"
+                                            title="Delete">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                    <button (click)="openPasswordModal(user.userId)"
+                                            class="btn-icon text-yellow-600"
+                                            [disabled]="isLoading"
+                                            title="Change Password">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            }
 
                             <div class="action-group mt-4">
                                 <span class="action-label">Additional Options</span>
@@ -392,14 +420,6 @@
                                         title="Additional Info">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                </button>
-                                <button (click)="openRecommendationModal(user)"
-                                        class="btn-icon text-purple-600"
-                                        [disabled]="isLoading"
-                                        title="Add Recommendation">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13H4a2 2 0 01-2-2V6a2 2 0 012-2h16a2 2 0 012 2v3a2 2 0 01-2 2h-8z"></path>
                                     </svg>
                                 </button>
                                 <button (click)="openRecommendationsViewModal(user)"
@@ -424,7 +444,7 @@
     </div>
 
     <!-- Create Guest User -->
-    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-8 mt-8">
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-8 mt-8" [class.opacity-50]="isGuestUser">
         <h2 class="text-xl font-semibold mb-4">Create Guest User</h2>
         <form [formGroup]="guestUserForm" (ngSubmit)="onGuestUserSubmit()" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -481,12 +501,16 @@
 
             <div class="flex items-center justify-end mt-6">
                 <button type="submit"
-                        [disabled]="!guestUserForm.valid || isLoading"
+                        [disabled]="!guestUserForm.valid || isLoading || isGuestUser"
                         class="btn-primary">
                     {{ isLoading ? 'Creating...' : 'Create Guest User' }}
                 </button>
             </div>
         </form>
+        <!-- Add message for guest users -->
+        <div *ngIf="isGuestUser" class="mt-4 text-sm text-gray-500 text-center">
+            Creating guest users is not available in demo mode
+        </div>
     </div>
 </div>
 
@@ -497,7 +521,7 @@
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-semibold">Additional Properties for {{ selectedUser.username }}</h2>
             <div class="flex items-center gap-4">
-                @if (!isEditingAdditionalProperties) {
+                @if (!isEditingAdditionalProperties && !isGuestUser) {
                     <button (click)="startEditingAdditionalProperties()"
                             class="btn-icon text-blue-600 hover:text-blue-800"
                             [disabled]="isLoading"

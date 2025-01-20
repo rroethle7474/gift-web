@@ -18,7 +18,7 @@ export class HeaderComponent {
   readonly environment = environment;
 
   showAdminLinks$ = this.authService.currentUser$.pipe(
-    map(user => this.environment.initialSetup || user?.isAdmin || false)
+    map(user => this.environment.initialSetup || user?.isAdmin || user?.isGuestUser || false)
   );
 
   showMenu$ = this.authService.isLoggedIn$.pipe(
