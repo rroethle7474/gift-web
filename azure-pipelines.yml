@@ -71,7 +71,6 @@ stages:
         archiveFile: '$(Build.ArtifactStagingDirectory)/test-app.zip'
         itemSpec: |
           dist/**
-          server.js
           package.json
       displayName: 'Archive Test Build'
 
@@ -101,7 +100,6 @@ stages:
         archiveFile: '$(Build.ArtifactStagingDirectory)/prod-app.zip'
         itemSpec: |
           dist/**
-          server.js
           package.json
       displayName: 'Archive Production Build'
 
