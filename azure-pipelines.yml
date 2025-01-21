@@ -134,7 +134,7 @@ stages:
               azureSubscription: 'Gift-Web-Connector'
               appName: 'test-gift-web-rpr'
               package: '$(Pipeline.Workspace)/drop/test-app.zip'
-              startUpCommand: 'pm2 start server.js --no-daemon'
+              startUpCommand: 'pm2 serve /home/site/wwwroot/dist/christmas-gift-app/browser --no-daemon'
 
 - stage: DeployProd
   dependsOn: DeployTest
@@ -153,4 +153,4 @@ stages:
               azureSubscription: 'Gift-Web-Connector'
               appName: 'prod-gift-web-rpr'
               package: '$(Pipeline.Workspace)/drop/prod-app.zip'
-              startUpCommand: 'node server.js'
+              startUpCommand: 'pm2 serve /home/site/wwwroot/dist/christmas-gift-app/browser --no-daemon'
