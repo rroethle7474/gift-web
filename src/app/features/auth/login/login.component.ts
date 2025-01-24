@@ -92,6 +92,7 @@ export class LoginComponent implements OnInit {
                     });
                 },
                 error: (error) => {
+                    console.log("ERROR FOR LOGIN", error)
                     this.errorMessage = error.error?.message || 'An error occurred during sign in';
                     this.isLoading = false;
                 }

@@ -3,6 +3,18 @@
 ## Overview
 GiftTime is a specialized gift management web application built with Angular 17 that streamlines the gift selection and approval process. The application enables users (selected by administrators) to choose gifts, which then go through a dual approval workflow involving both parents and administrators. This ensures that recipients get exactly what they want for special occasions like birthdays and holidays.
 
+Prod Url:
+
+Test Url:
+
+// TO-DO
+--Setup prod to use actual url
+-- create users and recommendations for users and play around with site.
+-- add User Guide explaining demo mode/initial setup/and how to play around with the site.
+
+## User Guide
+-- Demo Mode
+
 ## Features
 - User gift selection interface
 - Admin user management
