@@ -3,17 +3,67 @@
 ## Overview
 GiftTime is a specialized gift management web application built with Angular 17 that streamlines the gift selection and approval process. The application enables users (selected by administrators) to choose gifts, which then go through a dual approval workflow involving both parents and administrators. This ensures that recipients get exactly what they want for special occasions like birthdays and holidays.
 
-Prod Url:
+Prod Url: https://www.sillymonkeygifts.com/
 
-Test Url:
+Test Url: https://test-gift-web-rpr-gdakgudsdudth3ha.centralus-01.azurewebsites.net/
 
-// TO-DO
---Setup prod to use actual url
--- create users and recommendations for users and play around with site.
--- add User Guide explaining demo mode/initial setup/and how to play around with the site.
 
 ## User Guide
 -- Demo Mode
+The GiftTime application includes a demo mode feature that allows users to explore the application's functionality without requiring real credentials or affecting production data. The demo mode provides access to sample guest accounts and limited administrative features.
+
+### Demo Mode
+Demo Mode is a special configuration that enables demonstration features within the application. When enabled:
+
+1. **Guest User Access**: 
+   - The login page displays a special "Demo" section with a dropdown of available guest users
+   - Users can select and log in as any of these demonstration accounts without needing a password
+   - Guest users have access to limited functionality for demonstration purposes
+
+2. **Restricted Administrative Actions**:
+   - Guest users can view the admin interfaces but cannot perform certain actions:
+     - Creating new users is disabled
+     - Adding new guest users is disabled 
+     - Certain sensitive administrative functions are unavailable
+
+3. **Visual Indicators**:
+   - Banner notifications appear on admin pages to indicate the limited demo status
+   - Some UI elements are disabled or have reduced opacity to indicate unavailable features
+
+### Initial Setup Mode
+Initial Setup Mode is designed for first-time installation and configuration of the application. When enabled:
+
+1. **Authentication Bypass**:
+   - The application bypasses normal authentication requirements
+   - Admin routes are accessible without login credentials
+   - This allows administrators to set up initial users and system configurations
+
+2. **Security Considerations**:
+   - This mode should ONLY be enabled during the initial setup phase
+   - Once initial configuration is complete, this mode should be disabled immediately
+
+### Configuring Demo and Setup Modes
+
+Both modes can be configured in the environment settings:
+
+1. **Local Development**:
+   - Edit `src/environments/environment.ts` and set:
+   ```
+   demoMode: true,  // To enable demo features
+   initialSetup: true,  // To enable initial setup mode
+   ```
+
+2. **Production/Test Deployment**:
+   - Configure through Azure DevOps pipeline variables:
+   - `TEST_DEMO_MODE`: Controls demo mode in test environment
+   - `PROD_DEMO_MODE`: Controls demo mode in production environment
+   - `TEST_INITIAL_SETUP`: Controls setup mode in test environment
+   - `PROD_INITIAL_SETUP`: Controls setup mode in production environment
+
+**IMPORTANT SECURITY NOTICE**: 
+- Initial Setup Mode should NEVER be enabled in production except during the first deployment
+- After creating the initial administrator account, immediately disable this mode
+- Demo Mode should only be enabled in controlled environments or when specifically needed for demonstrations
 
 ## Features
 - User gift selection interface
@@ -39,6 +89,8 @@ This web application requires the following backend components to function:
    https://github.com/rroethle7474/gift-api
 
 2. **SQL Database**: A local SQL Server database is required for data storage.
+The SQL Database is shared across multiple projects to save on costs. The giftdb's are found below.
+https://github.com/rroethle7474/ProjectDb/tree/main/Tables
 
 ## Local Development Setup
 1. **Install Dependencies**
